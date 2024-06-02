@@ -58,6 +58,14 @@ public:
       glfwSwapBuffers(m_window);
       glfwPollEvents();
     }
+    
+    int getWindowWidth() {
+      return m_width;
+    }
+
+    int getWindowHeight() {
+      return m_height;
+    }
 private:
     GLFWwindow *m_window;
     int m_width;

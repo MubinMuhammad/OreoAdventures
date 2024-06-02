@@ -3,6 +3,11 @@
 
 #include "glad/include/glad/glad.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+#include "shader.hpp"
+
 namespace cstmEngine {
   struct TextureData {
     int width, height;
@@ -27,10 +32,21 @@ namespace cstmEngine {
           img_data.width, img_data.height, 0, img_data.color_channels == 3 ? GL_RGB : GL_RGBA,
           GL_UNSIGNED_BYTE, img_data.data
         );
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        if (img_data.data) {
+          stbi_image_free(img_data.data);
+        }
       }
 
       void destroy() {
-        
+        glDeleteTextures(1, &m_texture);
+      }
+
+      void use(int slot, const char *uniform_name, cstmEngine::Shader* const _shader) {
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_2D, m_texture);
+        glUniform1i(glGetUniformLocation(_shader->getShaderProgram(), uniform_name), slot);
       }
     private:
       unsigned int m_texture;

@@ -1,13 +1,12 @@
 #ifndef _BUFFER_HPP_
 #define _BUFFER_HPP_
-
 #include "glad/include/glad/glad.h"
 #include <iostream>
 
 namespace cstmEngine {
   struct Vertex {
     float pos[2];
-    float color[3];
+    float texture_coords[2];
   };
 
   class Buffer {
@@ -30,7 +29,7 @@ public:
       glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
       glEnableVertexAttribArray(1);
-      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(float)));
+      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(float)));
 
       glBindBuffer(m_vbo, 0);
       glBindVertexArray(0);
@@ -46,7 +45,7 @@ public:
       glDeleteVertexArrays(1, &m_vao);
     }
 
-    void useBuffer() {
+    void use() {
       glBindVertexArray(m_vao);
     }
 private:

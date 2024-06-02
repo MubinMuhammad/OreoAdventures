@@ -33,7 +33,11 @@ public:
       glDeleteProgram(m_shader_bin);
     }
 
-    void useShader() {
+    unsigned int getShaderProgram() { 
+      return m_shader_bin; 
+    }
+
+    void use() {
       glUseProgram(m_shader_bin);
     }
 private:
