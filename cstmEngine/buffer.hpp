@@ -4,14 +4,22 @@
 #include <iostream>
 
 namespace cstmEngine {
+  struct Vector2 { float x, y; };
+  struct Vector3 { float x, y, z; };
+  struct Vector4 { float x, y, z, w; };
+
   struct Vertex {
-    float pos[2];
-    float texture_coords[2];
+    Vector2 coord;
+    Vector3 color;
   };
 
   class Buffer {
 public:
-    void create(unsigned int vertices_size, Vertex *vertices, unsigned int indices_size, unsigned char *indices) {
+    unsigned int m_vao;
+    unsigned int m_vbo;
+    unsigned int m_ebo;
+
+    void create(unsigned int vertices_size, Vertex *vertices, unsigned int indices_size, unsigned int *indices) {
       glGenVertexArrays(1, &m_vao);
       glBindVertexArray(m_vao);
 
@@ -22,20 +30,20 @@ public:
       if (indices_size != 0 && indices != NULL) {
         glGenBuffers(1, &m_ebo);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size, indices, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size, indices, GL_STATIC_DRAW);
       }
       
       glEnableVertexAttribArray(0);
       glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
       glEnableVertexAttribArray(1);
-      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(float)));
+      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(float)));
 
-      glBindBuffer(m_vbo, 0);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindVertexArray(0);
 
       if (indices_size != 0 && indices != NULL) {
-        glBindBuffer(m_ebo, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
     }
     
@@ -48,10 +56,6 @@ public:
     void use() {
       glBindVertexArray(m_vao);
     }
-private:
-    unsigned int m_vao;
-    unsigned int m_vbo;
-    unsigned int m_ebo;
   };
 }
 

@@ -3,78 +3,82 @@
 #include "cstmEngine/buffer.hpp"
 #include "cstmEngine/shader.hpp"
 #include "cstmEngine/texture.hpp"
+#include "cstmEngine/batchRenderer.hpp"
 
 int main() {
   cstmEngine::Window game_window;
-  game_window.create(400, 500, "MarioAdventures");
+  game_window.create(720, 480, "MarioAdventures");
 
   const char *vertex_shader =
     "#version 330 core\n"
     "layout(location = 0) in vec2 xy;\n"
-    "layout(location = 1) in vec2 tex_coords;\n"
+    "layout(location = 1) in vec3 color;\n"
 
-    "out vec2 vtex_coords;\n"
+    "out vec3 v_color;\n"
 
     "void main() {\n"
     "  gl_Position = vec4(vec2(xy), 0.0f, 1.0f);\n"
-    "  vtex_coords = tex_coords;\n"
+    "  v_color = color;\n"
     "}";
 
   const char *fragment_shader =
     "#version 330 core\n"
     "out vec4 frag_color;\n"
 
-    "in vec2 vtex_coords;\n"
-    "uniform sampler2D uv_Texture;\n"
+    "in vec3 v_color;\n"
 
     "void main() {\n"
-    "  frag_color = texture2D(uv_Texture, vtex_coords);\n"
+    "  frag_color = vec4(v_color, 1.0f);\n"
     "}";
 
   cstmEngine::Shader game_shader;
   game_shader.create(vertex_shader, fragment_shader);
 
-  cstmEngine::TextureData game_texture_data;
-  stbi_set_flip_vertically_on_load(1);
-  game_texture_data.data = stbi_load(
-    "/home/bssm/Pictures/nord.jpg", 
-    &game_texture_data.width, 
-    &game_texture_data.height, 
-    &game_texture_data.color_channels, 0
-  );
+  cstmEngine::BatchRenderer brenderer;
+  brenderer.create();
 
-  cstmEngine::Texture game_texture;
-  game_texture.create(game_texture_data);
-
-  cstmEngine::Vertex vertices[] = {
-    {{-0.5f, 0.5f}, {0.0f, 1.0f}},
-    {{-0.5f,-0.5f}, {0.0f, 0.0f}},
-    {{ 0.5f,-0.5f}, {1.0f, 0.0f}},
-    {{ 0.5f, 0.5f}, {1.0f, 1.0f}},
-  };
-
-  unsigned char indices[] = {
-    0, 1, 2,
-    0, 3, 2
-  };
-
-  cstmEngine::Buffer game_buffer;
-  game_buffer.create(sizeof(vertices), vertices, sizeof(indices), indices);
+  float playerX = 0.0f;
+  float playerY = 0.0f;
+  float last_time;
+  float crnt_time;
+  float delta_time;
 
   while (game_window.isOpen()) {
-    game_window.beginFrame(125/255.0f, 196/255.0f, 207/255.0f, 1.0f);
+    crnt_time = glfwGetTime();
+    delta_time = crnt_time - last_time;
+    last_time = crnt_time;
+
+    game_window.beginFrame(237/255.0f, 219/255.0f, 178/255.0f, 1.0f);
+    brenderer.beginFrame();
 
     game_shader.use();
-    game_buffer.use();
-    game_texture.use(0, "uv_Texture", &game_shader);
+    brenderer.drawQuadC({0.5f, 0.5f}, {playerX, playerY}, {193 / 255.0f, 74 / 255.0f, 74 / 255.0f});
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+    if (
+      glfwGetKey(game_window.m_window, GLFW_KEY_W) == GLFW_PRESS ||
+      glfwGetKey(game_window.m_window, GLFW_KEY_UP) == GLFW_PRESS
+    ) playerY += 1.0f * delta_time;
 
+    if (
+      glfwGetKey(game_window.m_window, GLFW_KEY_S) == GLFW_PRESS ||
+      glfwGetKey(game_window.m_window, GLFW_KEY_DOWN) == GLFW_PRESS
+    ) playerY -= 1.0f * delta_time;
+
+    if (
+      glfwGetKey(game_window.m_window, GLFW_KEY_A) == GLFW_PRESS ||
+      glfwGetKey(game_window.m_window, GLFW_KEY_LEFT) == GLFW_PRESS
+    ) playerX -= 1.0f * delta_time;
+
+    if (
+      glfwGetKey(game_window.m_window, GLFW_KEY_D) == GLFW_PRESS ||
+      glfwGetKey(game_window.m_window, GLFW_KEY_RIGHT) == GLFW_PRESS
+    ) playerX += 1.0f * delta_time;
+
+    brenderer.endFrame();
     game_window.endFrame();
   }
 
-  game_texture.destroy();
-  game_buffer.destroy();
+  brenderer.destroy();
   game_shader.destroy();
   game_window.destroy();
   return 0;

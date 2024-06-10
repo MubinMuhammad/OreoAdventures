@@ -9,6 +9,11 @@
 namespace cstmEngine {
   class Window {
 public:
+    GLFWwindow *m_window;
+    int m_width;
+    int m_height;
+    const char *m_title;
+
     void create(int width, int height, const char *title) {
       m_width = width;
       m_height = height;
@@ -66,11 +71,6 @@ public:
     int getWindowHeight() {
       return m_height;
     }
-private:
-    GLFWwindow *m_window;
-    int m_width;
-    int m_height;
-    const char *m_title;
   };
 }
 
