@@ -4,7 +4,7 @@
 #include "buffer.hpp"
 
 namespace cstmEngine {
-  class BatchRenderer {
+  class Batch {
     public:
       void create() {
         int a = 3;
@@ -48,10 +48,30 @@ namespace cstmEngine {
         float x = size.x / 2;
         float y = size.y / 2;
 
-        m_vertices[total_quads * 4 + 0] = {{-x + pos.x, y + pos.y}, color};
-        m_vertices[total_quads * 4 + 1] = {{-x + pos.x,-y + pos.y}, color};
-        m_vertices[total_quads * 4 + 2] = {{ x + pos.x,-y + pos.y}, color};
-        m_vertices[total_quads * 4 + 3] = {{ x + pos.x, y + pos.y}, color};
+        m_vertices[total_quads * 4 + 0] = {{-x + pos.x, y + pos.y}, {}, color};
+        m_vertices[total_quads * 4 + 1] = {{-x + pos.x,-y + pos.y}, {}, color};
+        m_vertices[total_quads * 4 + 2] = {{ x + pos.x,-y + pos.y}, {}, color};
+        m_vertices[total_quads * 4 + 3] = {{ x + pos.x, y + pos.y}, {}, color};
+
+        total_quads++;
+      }
+
+      void drawQuadT(Vector2 size, Vector2 pos, Vector2 *texture_coords) {
+        if (total_quads == 1024 * 4) {
+          glBindBuffer(GL_ARRAY_BUFFER, m_buffer.m_vbo);
+          glBufferSubData(GL_ARRAY_BUFFER, 0, total_quads * sizeof(Vertex) * 4, m_vertices);
+          glBindVertexArray(m_buffer.m_vao);
+          glDrawElements(GL_TRIANGLES, total_quads * 6, GL_UNSIGNED_INT, 0);
+          total_quads = 0;
+        }
+
+        float x = size.x / 2;
+        float y = size.y / 2;
+
+        m_vertices[total_quads * 4 + 0] = {{-x + pos.x, y + pos.y}, {texture_coords[0]}, {}};
+        m_vertices[total_quads * 4 + 1] = {{-x + pos.x,-y + pos.y}, {texture_coords[1]}, {}};
+        m_vertices[total_quads * 4 + 2] = {{ x + pos.x,-y + pos.y}, {texture_coords[2]}, {}};
+        m_vertices[total_quads * 4 + 3] = {{ x + pos.x, y + pos.y}, {texture_coords[3]}, {}};
 
         total_quads++;
       }

@@ -10,6 +10,7 @@ namespace cstmEngine {
 
   struct Vertex {
     Vector2 coord;
+    Vector2 tex_coords;
     Vector3 color;
   };
 
@@ -37,7 +38,10 @@ public:
       glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
       glEnableVertexAttribArray(1);
-      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(float)));
+      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(float)));
+
+      glEnableVertexAttribArray(2);
+      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(5 * sizeof(float)));
 
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindVertexArray(0);
