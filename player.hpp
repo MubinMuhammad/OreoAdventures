@@ -4,9 +4,17 @@
 #include "cstmEngine/buffer.hpp"
 
 struct Player {
-  float x, y, w, h;
+  float x;
+  float y;
+  float w;
+  float h;
+  float mass;
+  cstmEngine::Vector2 velocity;
+  cstmEngine::Vector2 accel;
+  cstmEngine::Vector2 force;
+  cstmEngine::Vector2 friction;
   cstmEngine::Vector2 tex_coords[4];
-  float velocity, accel, friction;
+  bool on_ground = false;
 };
 
 #endif

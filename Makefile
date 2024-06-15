@@ -9,3 +9,6 @@ all:
 
 run:
 	./MarioAdventures
+
+clean:
+	rm -fr ./MarioAdventures

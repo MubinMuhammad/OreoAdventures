@@ -7,8 +7,12 @@
 #include <iostream>
 
 namespace cstmEngine {
-  class Window {
-public:
+  struct Window {
+    GLFWwindow *m_window;
+    int m_width;
+    int m_height;
+    const char *m_title;
+
     void create(int width, int height, const char *title) {
       m_width = width;
       m_height = height;
@@ -60,23 +64,6 @@ public:
       glfwSwapBuffers(m_window);
       glfwPollEvents();
     }
-    
-    int getWidth() {
-      return m_width;
-    }
-
-    int getHeight() {
-      return m_height;
-    }
-    
-    GLFWwindow *getID() {
-      return m_window;
-    }
-private:
-    GLFWwindow *m_window;
-    int m_width;
-    int m_height;
-    const char *m_title;
   };
 }
 
