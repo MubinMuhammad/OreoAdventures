@@ -33,12 +33,12 @@ public:
       glDeleteProgram(m_shader_bin);
     }
 
-    unsigned int getShaderProgram() { 
-      return m_shader_bin; 
-    }
-
     void use() {
       glUseProgram(m_shader_bin);
+    }
+
+    unsigned int getShaderProgram() { 
+      return m_shader_bin; 
     }
 private:
     void checkShaderErrors(unsigned vsfs_shader_bin, GLenum shader_type) {

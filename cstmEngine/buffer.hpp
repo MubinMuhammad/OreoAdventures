@@ -41,7 +41,7 @@ public:
       glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(float)));
 
       glEnableVertexAttribArray(2);
-      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(5 * sizeof(float)));
+      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(4 * sizeof(float)));
 
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       glBindVertexArray(0);
