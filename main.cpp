@@ -1,4 +1,3 @@
-#include "glm/include/common.hpp"
 #include "glm/include/glm.hpp"
 #include "glm/include/gtc/matrix_transform.hpp"
 #include "glm/include/gtc/type_ptr.hpp"
@@ -8,8 +7,11 @@
 #include "cstmEngine/shader.hpp"
 #include "cstmEngine/texture.hpp"
 #include "cstmEngine/batch.hpp"
+
 #include "player.hpp"
-#include <GLFW/glfw3.h>
+
+#include <vector>
+#include <string>
 
 const float GAME_GRAVITY = 9.80665f;
 
@@ -80,8 +82,11 @@ int main() {
 
   cstmEngine::Time game_time;
   Player game_player;
-  game_player.w = game_player.h = 30;
+  game_player.w = game_player.h = 20;
   game_player.mass = 10;
+
+  float game_camera_velocity_x;
+  float game_camera_x;
 
   while (game_window.isOpen()) {
     float half_width = (float)game_window.m_width / 2;
@@ -93,16 +98,16 @@ int main() {
 
       float ground_level = -half_height + game_player.h / 2;
 
-      if (glfwGetKey(game_window.m_window, GLFW_KEY_D) == GLFW_PRESS ||
-          glfwGetKey(game_window.m_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        game_player.force.x = 50.0f;
-      else if (glfwGetKey(game_window.m_window, GLFW_KEY_A) == GLFW_PRESS ||
-          glfwGetKey(game_window.m_window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        game_player.force.x = -50.0f;
+      if (glfwGetKey(game_window.m_window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(game_window.m_window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        game_player.force.x = 150.0f;
+      }
+      else if (glfwGetKey(game_window.m_window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(game_window.m_window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        game_player.force.x = -150.0f;
+      }
       else
         game_player.force.x = 0.0f;
 
-      game_player.friction.x = 0.2f * GAME_GRAVITY * game_player.mass;
+      game_player.friction.x = 0.7f * GAME_GRAVITY * game_player.mass;
       game_player.accel.x = game_player.force.x / game_player.mass;
       game_player.velocity.x += game_player.accel.x * game_time.delta;
 
@@ -112,7 +117,6 @@ int main() {
 
       if (game_player.velocity.x > 0.0f) game_player.velocity.x -= _v;
       else if (game_player.velocity.x < 0.0f) game_player.velocity.x += _v;
-
 
       game_player.x += game_player.velocity.x;
 
@@ -128,6 +132,14 @@ int main() {
 
       game_player.y += game_player.velocity.y;
       game_player.y = std::max(ground_level, game_player.y);
+
+      if (game_player.velocity.x > 0.0f) {
+        game_camera_velocity_x = std::min(1000.0f * game_time.delta, game_player.velocity.x) ;
+      }
+      else if (game_player.velocity.x < 0.0f) {
+        game_camera_velocity_x = std::max(-1000.0f * game_time.delta, game_player.velocity.x);
+      }
+      game_camera_x += game_camera_velocity_x;
     }
 
     // Render Scope
@@ -140,7 +152,7 @@ int main() {
       glm::mat4 ortho_proj = glm::ortho(-half_width, half_width, -half_height, half_height, 0.1f, 100.0f);
       glUniformMatrix4fv(glGetUniformLocation(game_shader.getShaderProgram(), "ortho_proj"), 1, GL_FALSE, glm::value_ptr(ortho_proj));
 
-      glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+      glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-game_camera_x, 0.0f, -1.0f));
       glUniformMatrix4fv(glGetUniformLocation(game_shader.getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(view));
 
       // Drawing The Player
