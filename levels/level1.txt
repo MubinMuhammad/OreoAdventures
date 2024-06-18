@@ -10,9 +10,9 @@
 |                                                                                         
 |                                                                                         
 |P                                  CCC                                                   
-|                                   ___      B                                            
-|                      C                   BBBBB                                          
-|                      _     ___          BBBBBBB    C                                    
-|                                            L      GGGGGGGG                             D
+|                                   ___                                                   
+|                      C                                                                  
+|                      _     ___                     C                                    
+|                                            T      GGGGGGGG                              
 |GGGGGGGG                              GGGGGGGGGGGGGddddddddG                            D
-|ddddddddGGGGGGGGGGG     GGGGGGGGGGGGGGddddddddddddddddddddddGGGGGG      GGGGGGGGGGGGGGGGd
+|ddddddddGGGGGGGGGSS     SSSGGGGGGGGGGGddddddddddddddddddddddGGGGGG      GGGGGGGGGGGGGGGGd

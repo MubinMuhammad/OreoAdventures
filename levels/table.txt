@@ -1,7 +1,6 @@
 G -> grass/dirt
 d -> dirt
-L -> log
-l -> upside log
+T -> tree
 B -> bush
 P -> player
 C -> coin
@@ -11,6 +10,5 @@ w -> water
 S -> x-axis slider
 _ -> slab
 U -> y-axis slider
-F -> flower bush
 b -> box
 f -> fence
