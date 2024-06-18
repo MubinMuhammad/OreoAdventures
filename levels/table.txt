@@ -1,0 +1,16 @@
+G -> grass/dirt
+d -> dirt
+L -> log
+l -> upside log
+B -> bush
+P -> player
+C -> coin
+D -> door
+W -> woodpile
+w -> water
+S -> x-axis slider
+_ -> slab
+U -> y-axis slider
+F -> flower bush
+b -> box
+f -> fence

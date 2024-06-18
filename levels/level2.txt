@@ -1,0 +1,18 @@
+100
+|                                                                                        
+|                                                                                        
+|                                                                                        
+|                                                                                        D
+|                                                                                        D
+|                                                   B                               GG   G
+|                                                  BBB                             Gdd  Gd
+|                                                  BBB                            Gddd  dd
+|                                                 BBBBB                         CGdddd  dd
+|                                                   L C                         Gddddd  dd
+|P           BBBB                 C              GGGGGG                        Gdddddd  dd
+|        BB   BBB                 _    CCC  ___    dddd                      CGddddddd  dd
+|       BBBBB BB           C           ___                                   Gdddddddd  dd
+|         BBBB             _                 C                              Gddddddddd  dd
+|            B                               W      GGGGGGGG         C     Gdddddddddd  dd
+|GGGGGGGG    L                         GGGGGGGGGGGGGddddddddG             Gddddddddddd  dd
+|ddddddddGGGGGGGGGGG     GGGGGGGGGGGGGGddddddddddddddddddddddGGGGGG      GGddddddddddd  dd

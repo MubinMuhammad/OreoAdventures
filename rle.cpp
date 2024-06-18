@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -10,15 +11,20 @@ int main(int argc, char **argv) {
     for (int i = 1; i < argc; i++) {
       std::ifstream infile(argv[i]);
       std::string line;
-      std::string outline;
+      std::string outline = "";
+      std::string full_line = "";
 
+      std::getline(infile, line);
+      outfile << "const int level_" << i << "_req = " << line << ";\n";
       outfile << "const std::string level_" << i << " = \"";
 
+      int j = 0, req_points = 0;
       while (std::getline(infile, line)) {
         if (line.size() == 0) continue;
 
         int l = 1;
         char c = line[0];
+        outline = "";
 
         for (int i = 1; i < line.size(); i++) {
           if (line[i] != c) {
@@ -29,12 +35,14 @@ int main(int argc, char **argv) {
           }
           else l++;
         }
-        outline += std::to_string(l) + c + "\\n";
+
+        outline += std::to_string(l) + c;
+        full_line.insert(0, outline + "\\n");
       }
 
-      outline.pop_back();
-      outline.pop_back();
-      outfile << outline << "\";\n";
+      full_line.pop_back();
+      full_line.pop_back();
+      outfile << full_line << "\";\n";
       infile.close();
     }
 

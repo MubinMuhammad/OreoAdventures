@@ -1,0 +1,18 @@
+50
+|                                                                                         
+|                                                                                         
+|                                                                                         
+|                                                                                         
+|                                                                                         
+|                                                                                         
+|                                                                                         
+|                                                                                         
+|                                                                                         
+|                                                                                         
+|P                                  CCC                                                   
+|                                   ___      B                                            
+|                      C                   BBBBB                                          
+|                      _     ___          BBBBBBB    C                                    
+|                                            L      GGGGGGGG                             D
+|GGGGGGGG                              GGGGGGGGGGGGGddddddddG                            D
+|ddddddddGGGGGGGGGGG     GGGGGGGGGGGGGGddddddddddddddddddddddGGGGGG      GGGGGGGGGGGGGGGGd

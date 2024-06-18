@@ -9,11 +9,11 @@
 #include "cstmEngine/batch.hpp"
 
 #include "player.hpp"
+#include "levels.hpp"
+#include "texture.hpp"
 
 #include <vector>
 #include <string>
-
-const float GAME_GRAVITY = 9.80665f;
 
 namespace cstmEngine {
   struct Time {
@@ -38,7 +38,72 @@ void windowResizeCallback(GLFWwindow *window, int w, int h) {
   game_window.m_height = h;
 }
 
+void createLevel(
+  cstmEngine::Batch &batch,
+  float square_size,
+  const std::string &level_rle,
+  cstmEngine::Vector2 half_window_size,
+  std::vector<cstmEngine::Vector2[4]> &texture_grid
+) {
+  std::string level_num;
+  int texture_idx;
+  int level_num_i;
+  int bush_level = -1;
+  char level_char;
+
+  cstmEngine::Vector2 block_position = {
+    -half_window_size.x + (square_size / 2), 
+    -half_window_size.y + (square_size / 2)
+  };
+
+  for (int i = 0; i < level_rle.size(); i++) {
+    if (level_rle[i] == '\n') {
+      block_position.x = -half_window_size.x + (square_size / 2);
+      block_position.y += square_size;
+      continue;
+    }
+
+    if (level_rle[i] < '0' || level_rle[i] > '9') {
+      level_num_i = std::stoi(level_num);
+      level_char = level_rle[i];
+      level_num = "";
+
+      if (level_char == '|') continue;
+
+      switch (level_char) {
+        case ' ':
+          block_position.x += level_num_i * (square_size);
+          break;
+        case 'G':
+          texture_idx = 6;
+          break;
+        case 'd':
+          texture_idx = 7;
+          break;
+        case 'L':
+          texture_idx = 12;
+        case 'l':
+          texture_idx = 13;
+        case 'B':
+          texture_idx = 8;
+      }
+
+      for (int j = 0; j < level_num_i; j++) {
+
+        block_position.x += square_size;
+      }
+
+      continue;
+    }
+
+    level_num += level_rle[i];
+  }
+};
+
 int main() {
+  const float GAME_GRAVITY = 9.80665f;
+  const float GAME_SQUARE_SIZE = 50;
+
   game_window.create(720, 480, "Mario Adventures");
   glfwSetWindowSizeCallback(game_window.m_window, windowResizeCallback);
 
@@ -68,25 +133,45 @@ int main() {
     "in vec2 v_tex_coords;\n"
     "in vec3 v_color;\n"
 
-    /*"uniform sampler2D texture_atlas;\n"*/
+    "uniform sampler2D game_atlas;\n"
 
     "void main() {\n"
-    "  px_color = vec4(v_color, 1.0f);\n"
+    "  px_color = texture2D(game_atlas, v_tex_coords) * vec4(v_color, 1.0f);\n"
     "}";
 
   cstmEngine::Shader game_shader;
   game_shader.create(vertex_shader, fragment_shader);
+
+  stbi_set_flip_vertically_on_load(true);
+
+  cstmEngine::TextureData game_atlas_data;
+  game_atlas_data.data = stbi_load(
+    "./assets/GamePixelArt.png",
+    &game_atlas_data.width,
+    &game_atlas_data.height,
+    &game_atlas_data.color_channels,
+    0
+  );
+
+  cstmEngine::Texture game_atlas;
+  game_atlas.create(game_atlas_data);
+
+  cstmEngine::Vector2 game_atlas_wh = {(float)game_atlas_data.width, (float)game_atlas_data.height};
+  std::vector<cstmEngine::Vector2[4]> game_atlas_grid(8 * 8);
+
+  for (int i = 0, k = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++, k++) {
+      textureCropAtlas(game_atlas_grid[k], game_atlas_wh, 32, {1, 1}, {(float)j, (float)i});
+    }
+  }
 
   cstmEngine::Batch game_batch;
   game_batch.create();
 
   cstmEngine::Time game_time;
   Player game_player;
-  game_player.w = game_player.h = 20;
+  game_player.w = game_player.h = GAME_SQUARE_SIZE;
   game_player.mass = 10;
-
-  float game_camera_velocity_x;
-  float game_camera_x;
 
   while (game_window.isOpen()) {
     float half_width = (float)game_window.m_width / 2;
@@ -132,14 +217,6 @@ int main() {
 
       game_player.y += game_player.velocity.y;
       game_player.y = std::max(ground_level, game_player.y);
-
-      if (game_player.velocity.x > 0.0f) {
-        game_camera_velocity_x = std::min(1000.0f * game_time.delta, game_player.velocity.x) ;
-      }
-      else if (game_player.velocity.x < 0.0f) {
-        game_camera_velocity_x = std::max(-1000.0f * game_time.delta, game_player.velocity.x);
-      }
-      game_camera_x += game_camera_velocity_x;
     }
 
     // Render Scope
@@ -148,15 +225,18 @@ int main() {
       game_batch.beginFrame();
 
       game_shader.use();
+      game_atlas.use(0, "game_atlas", &game_shader);
 
       glm::mat4 ortho_proj = glm::ortho(-half_width, half_width, -half_height, half_height, 0.1f, 100.0f);
       glUniformMatrix4fv(glGetUniformLocation(game_shader.getShaderProgram(), "ortho_proj"), 1, GL_FALSE, glm::value_ptr(ortho_proj));
 
-      glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-game_camera_x, 0.0f, -1.0f));
+      glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-game_player.x, -game_player.y, -1.0f));
       glUniformMatrix4fv(glGetUniformLocation(game_shader.getShaderProgram(), "view"), 1, GL_FALSE, glm::value_ptr(view));
 
+      createLevel(game_batch, GAME_SQUARE_SIZE, level_3, {half_width, half_height}, game_atlas_grid);
+
       // Drawing The Player
-      game_batch.drawQuadC({game_player.w, game_player.h}, {game_player.x, game_player.y}, {1.0f, 0.0f, 1.0f});
+      game_batch.drawQuadT({game_player.w, game_player.h}, {game_player.x, game_player.y}, game_atlas_grid[0]);
 
       game_batch.endFrame();
       game_window.endFrame();
