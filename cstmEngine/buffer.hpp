@@ -4,14 +4,14 @@
 #include <iostream>
 
 namespace cstmEngine {
-  struct Vector2 { float x, y; };
-  struct Vector3 { float x, y, z; };
-  struct Vector4 { float x, y, z, w; };
+  struct vec2 { float x, y; };
+  struct vec3 { float x, y, z; };
+  struct vec4 { float x, y, z, w; };
 
   struct Vertex {
-    Vector2 coord;
-    Vector2 tex_coords;
-    Vector3 color;
+    vec2 coord;
+    vec2 tex_coords;
+    vec3 color;
   };
 
   class Buffer {

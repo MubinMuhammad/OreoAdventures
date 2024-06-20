@@ -1,7 +1,7 @@
-COMPILER := g++
+COMPILER := g++ -std=c++17
 INCLUDE_DIR := -IcstmEngine/ -IcstmEngine/glad/include
 LIBS := -lglfw -lGL -L./glm/ -lglm
-SRC_FILES := main.cpp cstmEngine/glad/src/glad.c
+SRC_FILES := main.cpp cstmEngine/glad/src/glad.c texture.cpp
 EXE := MarioAdventures
 
 all:
@@ -13,4 +13,4 @@ run:
 	./MarioAdventures
 
 clean:
-	rm -fr ./MarioAdventures
+	rm -fr ./MarioAdventures ./rle

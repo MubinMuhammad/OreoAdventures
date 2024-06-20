@@ -38,7 +38,7 @@ namespace cstmEngine {
         m_buffer.destroy();
       }
 
-      void drawQuadC(Vector2 size, Vector2 pos, Vector3 color) {
+      void drawQuadC(vec2 size, vec2 pos, vec3 color) {
         if (total_quads == BATCH_SQUARE_CAPACITY) {
           glBindBuffer(GL_ARRAY_BUFFER, m_buffer.m_vbo);
           glBufferSubData(GL_ARRAY_BUFFER, 0, total_quads * sizeof(Vertex) * 4, m_vertices);
@@ -58,7 +58,7 @@ namespace cstmEngine {
         total_quads++;
       }
 
-      void drawQuadT(Vector2 size, Vector2 pos, Vector2 *texture_coords) {
+      void drawQuadT(vec2 size, vec2 pos, vec2 *texture_coords) {
         if (total_quads == BATCH_SQUARE_CAPACITY) {
           glBindBuffer(GL_ARRAY_BUFFER, m_buffer.m_vbo);
           glBufferSubData(GL_ARRAY_BUFFER, 0, total_quads * sizeof(Vertex) * 4, m_vertices);

@@ -15,34 +15,6 @@
 #include <vector>
 #include <string>
 
-const cstmEngine::Vector3 GAME_CLOUD1          = {1, 1, 0};
-const cstmEngine::Vector3 GAME_CLOUD2          = {2, 1, 1};
-const cstmEngine::Vector3 GAME_CLOUD3          = {1, 1, 3};
-const cstmEngine::Vector3 GAME_CLOUD4          = {1, 1, 4};
-const cstmEngine::Vector3 GAME_COIN            = {1, 1, 5};
-const cstmEngine::Vector3 GAME_GRASS           = {1, 1, 6};
-const cstmEngine::Vector3 GAME_DIRT            = {1, 1, 7};
-const cstmEngine::Vector3 GAME_CACTUS          = {1, 1, 14};
-const cstmEngine::Vector3 GAME_SAND            = {1, 1, 15};
-const cstmEngine::Vector3 GAME_HEART1          = {1, 1, 16};
-const cstmEngine::Vector3 GAME_HEART2          = {1, 1, 17};
-const cstmEngine::Vector3 GAME_HEART3          = {1, 1, 18};
-const cstmEngine::Vector3 GAME_WATER           = {1, 1, 22};
-const cstmEngine::Vector3 GAME_BRICK           = {1, 1, 23};
-const cstmEngine::Vector3 GAME_QUESTION_BLOCK  = {1, 1, 24};
-const cstmEngine::Vector3 GAME_FENCE           = {1, 1, 25};
-const cstmEngine::Vector3 GAME_WOODPILE        = {1, 1, 26};
-const cstmEngine::Vector3 GAME_PIPE_UP         = {1, 1, 27};
-const cstmEngine::Vector3 GAME_PIPE_HEAD       = {1, 1, 28};
-const cstmEngine::Vector3 GAME_BOX             = {1, 1, 30};
-const cstmEngine::Vector3 GAME_DOOR            = {1, 1, 31};
-const cstmEngine::Vector3 GAME_SLAB            = {1, 1, 32};
-const cstmEngine::Vector3 GAME_PLAYER1         = {1, 1, 33};
-const cstmEngine::Vector3 GAME_PLAYER2         = {1, 1, 34};
-const cstmEngine::Vector3 GAME_BUSH1           = {2, 1, 35};
-const cstmEngine::Vector3 GAME_BUSH2           = {2, 1, 37};
-const cstmEngine::Vector3 GAME_TREE1           = {2, 2, 38};
-
 namespace cstmEngine {
   struct Time {
     float crnt = 0;
@@ -66,20 +38,34 @@ void windowResizeCallback(GLFWwindow *window, int w, int h) {
   game_window.m_height = h;
 }
 
+bool verticalAABBCheck(cstmEngine::vec2 xy1[2], cstmEngine::vec2 xy2[2]) {
+  return
+    std::min(xy1[0].y, xy1[1].y) <= std::max(xy2[0].y, xy2[1].y) &&
+    std::max(xy1[0].y, xy1[1].y) >= std::min(xy2[0].y, xy2[1].y);
+}
+
+bool horizontalAABBCheck(cstmEngine::vec2 xy1[2], cstmEngine::vec2 xy2[2]) {
+  return
+    std::min(xy1[0].x, xy1[1].x) <= std::max(xy2[0].x, xy2[1].x) &&
+    std::max(xy1[0].x, xy1[1].x) >= std::min(xy2[0].x, xy2[1].x);
+}
+
 void createLevel(
   cstmEngine::Batch &batch,
   float square_size,
   const std::string &level_rle,
-  cstmEngine::Vector2 half_window_size,
-  std::vector<cstmEngine::Vector2[4]> &texture_grid,
-  cstmEngine::Vector2 player_pos
+  cstmEngine::vec2 half_window_size,
+  Player &player,
+  std::vector<cstmEngine::vec2> texture_grid,
+  std::vector<cstmEngine::vec2> quad_size
 ) {
   std::string level_num;
   char level_char;
-  const cstmEngine::Vector3 *_block = nullptr;
+  textureIdx block_idx = GAME_QUESTION_BLOCK;
   int level_num_i;
+  float y_offset = 0;
 
-  cstmEngine::Vector2 block_position = {
+  cstmEngine::vec2 block_position = {
     -half_window_size.x + (square_size / 2), 
     -half_window_size.y + (square_size / 2)
   };
@@ -103,62 +89,40 @@ void createLevel(
           block_position.x += level_num_i * square_size;
           continue;
           break;
-        case 'G':
-          _block = &GAME_GRASS;
-          break;
-        case 'd':
-          _block = &GAME_DIRT;
-          break;
-        case 'T':
-          _block = &GAME_TREE1;
-          break;
-        case 'B':
-          _block = &GAME_BUSH1;
-          break;
-        case 'P':
-          _block = &GAME_PLAYER1;
-          break;
-        case 'C':
-          _block = &GAME_COIN;
-          break;
-        case 'D':
-          _block = &GAME_DOOR;
-          break;
-        case 'W':
-          _block = &GAME_WOODPILE;
-          break;
-        case 'w':
-          _block = &GAME_WATER;
-          break;
-        case 'S':
-          _block = &GAME_SLAB;
-          break;
-        case '_':
-          _block = &GAME_SLAB;
-          break;
-        case 'U':
-          _block = &GAME_SLAB;
-          break;
-        case 'b':
-          _block = &GAME_BOX;
-          break;
-        case 'f':
-          _block = &GAME_FENCE;
-          break;
-        default:
-          _block = &GAME_QUESTION_BLOCK;
-          break;
+        case 'G': block_idx = GAME_GRASS; break;
+        case 'd': block_idx = GAME_DIRT; break;
+        case 'T': y_offset = square_size / 2; block_idx = GAME_TREE1; break;
+        case 'B': block_idx = GAME_BUSH1; break;
+        case 'P': block_idx = GAME_PLAYER1; break;
+        case 'C': block_idx = GAME_COIN; break;
+        case 'D': block_idx = GAME_DOOR; break;
+        case 'W': block_idx = GAME_WOODPILE; break;
+        case 'w': block_idx = GAME_WATER; break;
+        case 'S': block_idx = GAME_SAND; break;
+        case '_': block_idx = GAME_SLAB; break;
+        case 'U': block_idx = GAME_SLAB; break;
+        case 'b': block_idx = GAME_BOX; break;
+        case 'f': block_idx = GAME_FENCE; break;
+        default: block_idx = GAME_QUESTION_BLOCK; break;
       }
+
+      cstmEngine::vec2 block_tex_coords[4] = {
+        texture_grid[block_idx * 4 + 0],
+        texture_grid[block_idx * 4 + 1],
+        texture_grid[block_idx * 4 + 2],
+        texture_grid[block_idx * 4 + 3],
+      };
 
       for (int j = 0; j < level_num_i; j++) {
         batch.drawQuadT(
-          {_block->x * square_size, _block->y * square_size},
-          {block_position.x, block_position.y},
-          texture_grid[_block->z]
+          {quad_size[block_idx].x * square_size, quad_size[block_idx].y * square_size},
+          {block_position.x, block_position.y + y_offset},
+          block_tex_coords
         );
         block_position.x += square_size;
       }
 
+      y_offset = 0.0f;
       continue;
     }
 
@@ -222,21 +186,14 @@ int main() {
   cstmEngine::Texture game_atlas;
   game_atlas.create(game_atlas_data);
 
-  cstmEngine::Vector2 game_atlas_wh = {
+  cstmEngine::vec2 game_atlas_wh = {
     (float)game_atlas_data.width,
     (float)game_atlas_data.height
   };
 
-  std::vector<cstmEngine::Vector2[4]> game_atlas_grid(8 * 8);
-
-  for (int i = 0, k = 0; i < 8; i++) {
-    for (int j = 0; j < 8; j++, k++) {
-      textureCropAtlas( game_atlas_grid[k], 
-        game_atlas_wh, 32, {1, 1},
-        {(float)j, (float)i}
-      );
-    }
-  }
+  std::vector<cstmEngine::vec2> game_atlas_grid;
+  std::vector<cstmEngine::vec2> game_quad_size;
+  getTexCoordsFromAtlas(game_atlas_grid, game_quad_size, game_atlas_wh, 32);
 
   cstmEngine::Batch game_batch;
   game_batch.create();
@@ -244,7 +201,7 @@ int main() {
   cstmEngine::Time game_time;
   Player game_player;
   game_player.w = game_player.h = GAME_SQUARE_SIZE;
-  game_player.mass = 10;
+  game_player.mass = 5;
 
   while (game_window.isOpen()) {
     float half_width = (float)game_window.m_width / 2;
@@ -258,11 +215,11 @@ int main() {
 
       if (glfwGetKey(game_window.m_window, GLFW_KEY_D) == GLFW_PRESS ||
           glfwGetKey(game_window.m_window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        game_player.force.x = 150.0f;
+        game_player.force.x = 100.0f;
       }
       else if (glfwGetKey(game_window.m_window, GLFW_KEY_A) == GLFW_PRESS ||
                glfwGetKey(game_window.m_window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        game_player.force.x = -150.0f;
+        game_player.force.x = -100.0f;
       }
       else
         game_player.force.x = 0.0f;
@@ -313,7 +270,10 @@ int main() {
         1, GL_FALSE, glm::value_ptr(ortho_proj)
       );
 
-      glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-game_player.x, 0.0f, -1.0f));
+      glm::mat4 view = glm::translate(
+        glm::mat4(1.0f),
+        glm::vec3(std::min(0.0f, -game_player.x), 0.0f, -1.0f)
+      );
       glUniformMatrix4fv(
         glGetUniformLocation(game_shader.getShaderProgram(), "view"),
         1, GL_FALSE, glm::value_ptr(view)
@@ -322,14 +282,23 @@ int main() {
       createLevel(
         game_batch, GAME_SQUARE_SIZE, level_1,
         {half_width, half_height},
-        game_atlas_grid, {game_player.x, game_player.y}
+        {game_player.x, game_player.y},
+        game_atlas_grid,
+        game_quad_size
       );
 
       // Drawing The Player
+      cstmEngine::vec2 game_player_tex_coords[] = {
+        game_atlas_grid[GAME_PLAYER1 * 4 + 0],
+        game_atlas_grid[GAME_PLAYER1 * 4 + 1],
+        game_atlas_grid[GAME_PLAYER1 * 4 + 2],
+        game_atlas_grid[GAME_PLAYER1 * 4 + 3]
+      };
+
       game_batch.drawQuadT(
-        {GAME_PLAYER1.x * GAME_SQUARE_SIZE, GAME_PLAYER1.y * GAME_SQUARE_SIZE},
+        {GAME_SQUARE_SIZE, GAME_SQUARE_SIZE},
         {game_player.x, game_player.y},
-        game_atlas_grid[GAME_PLAYER1.z]
+        game_player_tex_coords
       );
 
       game_batch.endFrame();

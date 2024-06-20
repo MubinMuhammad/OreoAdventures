@@ -9,11 +9,11 @@ struct Player {
   float w;
   float h;
   float mass;
-  cstmEngine::Vector2 velocity;
-  cstmEngine::Vector2 accel;
-  cstmEngine::Vector2 force;
-  cstmEngine::Vector2 friction;
-  cstmEngine::Vector2 tex_coords[4];
+  cstmEngine::vec2 velocity;
+  cstmEngine::vec2 accel;
+  cstmEngine::vec2 force;
+  cstmEngine::vec2 friction;
+  cstmEngine::vec2 tex_coords[4];
   bool on_ground = false;
 };
 
