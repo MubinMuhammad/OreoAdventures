@@ -67,17 +67,27 @@ int main() {
   };
 
   std::vector<cstmEngine::vec2> gameAtlasGrid;
-  std::vector<cstmEngine::vec2> game_quad_size;
-  game::getTexCoordsFromAtlas(gameAtlasGrid, game_quad_size, gameAtlasWH, 32);
+  std::vector<cstmEngine::vec2> game_quad_sizes;
+  game::getTexCoordsFromAtlas(gameAtlasGrid, game_quad_sizes, gameAtlasWH, 32);
 
   cstmEngine::Batch gameBatch;
   gameBatch.create();
 
   game::Player player;
   player.m_size = {GAME_SQUARE_SIZE, GAME_SQUARE_SIZE};
-  player.m_phy.m_mass = 10.0f;
+  player.m_phy.m_mass = 50.0f;
 
   gameEngine::Time gameTime;
+
+  int levelPoints1;
+  std::vector<std::vector<game::BlockType>> levelMap1 = game::levelGet2DGrid("./levels/level1.txt", levelPoints1);
+
+  for (std::vector<game::BlockType> i : levelMap1) {
+    for (game::BlockType j : i) {
+      std::cout << j << " ";
+    }
+    std::cout << '\n';
+  }
 
   while (gameWindow.isOpen()) {
     float half_width = (float)gameWindow.m_width / 2;
@@ -90,23 +100,23 @@ int main() {
 
       if (glfwGetKey(gameWindow.m_window, GLFW_KEY_A) == GLFW_PRESS ||
           glfwGetKey(gameWindow.m_window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        playerForce.x = -100.0f;
+        playerForce.x = -500.0f;
         player.m_viewSide = game::SIDE_LEFT;
       }
       else if (glfwGetKey(gameWindow.m_window, GLFW_KEY_D) == GLFW_PRESS ||
                glfwGetKey(gameWindow.m_window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        playerForce.x = 100.0f;
+        playerForce.x = 500.0f;
         player.m_viewSide = game::SIDE_RIGHT;
       }
       else
         playerForce.x =  0.0f;
 
       if (glfwGetKey(gameWindow.m_window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        playerForce.y = 40.0f;
+        playerForce.y = 400.0f;
       else
         playerForce.y = 0.0f;
 
-      player.m_phy.update(gameTime.m_delta, playerForce, {0.9f, 0.0f});
+      player.m_phy.update(gameTime.m_delta, playerForce, {0.2f, 0.2f});
     }
 
     // Render Scope

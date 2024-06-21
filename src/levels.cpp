@@ -2,16 +2,32 @@
 #include "texture.hpp"
 
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <ctime>
 
 std::vector<std::vector<game::BlockType>>
-game::levelGet2DGrid(const char *level_path) {
+game::levelGet2DGrid(const char *level_path, int &outLevelPoints) {
   srand((unsigned int)time(NULL));
 
   std::ifstream ifile(level_path);
   std::string line;
   std::vector<std::vector<game::BlockType>> output;
+
+  if (!ifile.is_open())
+    std::cerr << "[err]: failed to load level file: `" << level_path << "`\n";
+
+  std::string num = "";
+  std::getline(ifile, line);
+
+  for (char c : line) {
+    if (c < '0' || c > '9')
+      break;
+
+    num += c;
+  }
+
+  outLevelPoints = std::stoi(num);
 
   while (std::getline(ifile, line)) {
     std::vector<game::BlockType> tmp;
@@ -47,4 +63,25 @@ game::levelGet2DGrid(const char *level_path) {
   }
 
   return output;
+}
+
+void game::levelRenderTile(
+  cstmEngine::Batch &batch,
+  std::vector<cstmEngine::vec2> textureGrid,
+  int tileSize,
+  cstmEngine::vec2 coord,
+  game::BlockType bt
+) {
+  cstmEngine::vec2 texCoords[] = {
+    textureGrid[bt * 4 + 0],
+    textureGrid[bt * 4 + 1],
+    textureGrid[bt * 4 + 2],
+    textureGrid[bt * 4 + 3],
+  };
+
+  batch.drawQuadT(
+    {(float)tileSize, (float)tileSize},
+    {coord.x * tileSize, coord.y * tileSize},
+    texCoords
+  );
 }
