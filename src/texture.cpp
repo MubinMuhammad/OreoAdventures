@@ -1,5 +1,4 @@
 #include "texture.hpp"
-#include "cstmEngine/buffer.hpp"
 
 static void textureCropAtlas(
   cstmEngine::vec2 *out_coord1,
@@ -32,7 +31,7 @@ static void textureCropAtlas(
   };
 }
 
-void getTexCoordsFromAtlas(
+void game::getTexCoordsFromAtlas(
   std::vector<cstmEngine::vec2> &v,
   std::vector<cstmEngine::vec2> &out_quad_size,
   cstmEngine::vec2 atlas_wh,
@@ -46,7 +45,7 @@ void getTexCoordsFromAtlas(
 
   // indexing rendering size factors
   out_quad_size[0] = {1, 1};
-  out_quad_size[1] = {1, 2};
+  out_quad_size[1] = {2, 1};
 
   for (int i = 2; i < 23; i++)
     out_quad_size[i] = {1, 1};
@@ -143,10 +142,5 @@ void getTexCoordsFromAtlas(
     );
     tex_x += 2;
     if (tex_x % 8 == 0) tex_y++;
-  }
-
-  for (int i = 0; i < v.size(); i++) {
-    if (i % 4 == 0) std::cout << '\n';
-    std::cout << v[i].x << ", " << v[i].y << '\n';
   }
 }

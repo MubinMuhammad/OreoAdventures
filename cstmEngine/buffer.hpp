@@ -1,13 +1,12 @@
 #ifndef _BUFFER_HPP_
 #define _BUFFER_HPP_
+
 #include "glad/include/glad/glad.h"
-#include <iostream>
+#include "types.hpp"
+
+#include <stddef.h>
 
 namespace cstmEngine {
-  struct vec2 { float x, y; };
-  struct vec3 { float x, y, z; };
-  struct vec4 { float x, y, z, w; };
-
   struct Vertex {
     vec2 coord;
     vec2 tex_coords;

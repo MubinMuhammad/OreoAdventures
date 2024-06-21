@@ -2,12 +2,14 @@ G -> grass/dirt
 d -> dirt
 T -> tree
 B -> bush
+? -> question block
 P -> player
 C -> coin
 D -> door
 W -> woodpile
 w -> water
 S -> x-axis slider
+s -> sand
 _ -> slab
 U -> y-axis slider
 b -> box
