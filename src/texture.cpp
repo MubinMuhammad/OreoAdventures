@@ -31,7 +31,7 @@ static void textureCropAtlas(
   };
 }
 
-void game::getTexCoordsFromAtlas(
+void game::textureGetCoordsIdxs(
   std::vector<cstmEngine::vec2> &v,
   std::vector<cstmEngine::vec2> &out_quad_size,
   cstmEngine::vec2 atlas_wh,
@@ -143,4 +143,15 @@ void game::getTexCoordsFromAtlas(
     tex_x += 2;
     if (tex_x % 8 == 0) tex_y++;
   }
+}
+
+void game::textureGetCoords(
+  std::vector<cstmEngine::vec2> &texGrid,
+  game::BlockType bkType,
+  cstmEngine::vec2 *outTexCoords
+) {
+  outTexCoords[0] = texGrid[bkType * 4 + 0];
+  outTexCoords[1] = texGrid[bkType * 4 + 1];
+  outTexCoords[2] = texGrid[bkType * 4 + 2];
+  outTexCoords[3] = texGrid[bkType * 4 + 3];
 }

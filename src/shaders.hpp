@@ -30,7 +30,7 @@ const char *fragment_shader =
   "uniform sampler2D game_atlas;\n"
 
   "void main() {\n"
-  "  px_color = texture2D(game_atlas, v_tex_coords) * vec4(v_color, 1.0f);\n"
+  "  px_color = texture2D(game_atlas, v_tex_coords);\n"
   "}";
 
 #endif

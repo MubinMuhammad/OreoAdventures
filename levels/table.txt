@@ -3,7 +3,6 @@ d -> dirt
 T -> tree
 B -> bush
 ? -> question block
-P -> player
 C -> coin
 D -> door
 W -> woodpile

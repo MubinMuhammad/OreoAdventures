@@ -5,10 +5,14 @@ SRC_FILES := src/main.cpp src/texture.cpp src/player.cpp src/levels.cpp gameEngi
 EXE := MarioAdventures
 
 all:
+	$(COMPILER) src/rle.cpp -o rle
+	./rle ./levels/level1.txt ./levels/level2.txt ./levels/level3.txt
+	mv levelsRle.hpp src/
 	$(COMPILER) $(SRC_FILES) -o $(EXE) $(INCLUDE_DIR) $(LIBS)
 
 run:
 	./MarioAdventures
 
 clean:
+	rm -fr ./rle
 	rm -fr ./MarioAdventures

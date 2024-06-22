@@ -4,7 +4,7 @@
 #include "glad/include/glad/glad.h"
 #include "types.hpp"
 
-#include <stddef.h>
+#include <cstddef>
 
 namespace cstmEngine {
   struct Vertex {

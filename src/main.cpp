@@ -12,22 +12,22 @@
 
 // Game Engine Includes
 #include "../gameEngine/time.hpp"
+#include "../gameEngine/physics.hpp"
 
 // Game Includes
 #include "player.hpp"
 #include "levels.hpp"
 #include "texture.hpp"
 #include "shaders.hpp"
+#include "levelsRle.hpp"
+#include "levels.hpp"
 
 #include <GLFW/glfw3.h>
+#include <cstddef>
+#include <cstdint>
+#include <ctime>
 #include <vector>
 #include <string>
-
-/*
- * TODO:
- *  Fix tree texture coordinates
- *  Fix player position
- * */
 
 cstmEngine::Window gameWindow;
 
@@ -40,6 +40,7 @@ void windowResizeCallback(GLFWwindow *window, int w, int h) {
 
 int main() {
   const float GAME_SQUARE_SIZE = 60;
+  const uint32_t GAME_SEED = time(NULL);
 
   gameWindow.create(720, 480, "Mario Adventures");
   glfwSetWindowSizeCallback(gameWindow.m_window, windowResizeCallback);
@@ -67,8 +68,8 @@ int main() {
   };
 
   std::vector<cstmEngine::vec2> gameAtlasGrid;
-  std::vector<cstmEngine::vec2> game_quad_sizes;
-  game::getTexCoordsFromAtlas(gameAtlasGrid, game_quad_sizes, gameAtlasWH, 32);
+  std::vector<cstmEngine::vec2> gameQuadSizes;
+  game::textureGetCoordsIdxs(gameAtlasGrid, gameQuadSizes, gameAtlasWH, 32);
 
   cstmEngine::Batch gameBatch;
   gameBatch.create();
@@ -79,15 +80,8 @@ int main() {
 
   gameEngine::Time gameTime;
 
-  int levelPoints1;
-  std::vector<std::vector<game::BlockType>> levelMap1 = game::levelGet2DGrid("./levels/level1.txt", levelPoints1);
-
-  for (std::vector<game::BlockType> i : levelMap1) {
-    for (game::BlockType j : i) {
-      std::cout << j << " ";
-    }
-    std::cout << '\n';
-  }
+  game::Level level1;
+  level1.loadLevel(levelRle1, levelPoints1);
 
   while (gameWindow.isOpen()) {
     float half_width = (float)gameWindow.m_width / 2;
@@ -112,11 +106,11 @@ int main() {
         playerForce.x =  0.0f;
 
       if (glfwGetKey(gameWindow.m_window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        playerForce.y = 400.0f;
+        playerForce.y = 500.0f;
       else
         playerForce.y = 0.0f;
 
-      player.m_phy.update(gameTime.m_delta, playerForce, {0.2f, 0.2f});
+      player.m_phy.update(gameTime.m_delta, playerForce, {0.7f, 0.0f});
     }
 
     // Render Scope
@@ -139,11 +133,18 @@ int main() {
 
       glm::mat4 view = glm::translate(
         glm::mat4(1.0f),
-        glm::vec3(std::min(0.0f, 0.0f), 0.0f, -1.0f)
+        glm::vec3(std::min(0.0f, -player.m_phy.m_pos.x), 0.0f, -1.0f)
       );
       glUniformMatrix4fv(
         glGetUniformLocation(gameShader.getShaderProgram(), "view"),
         1, GL_FALSE, glm::value_ptr(view)
+      );
+
+      level1.renderLevel(
+        gameBatch, gameAtlasGrid,
+        gameQuadSizes,
+        GAME_SQUARE_SIZE,
+        {(float)gameWindow.m_width, (float)gameWindow.m_height}
       );
 
       // Drawing The Player

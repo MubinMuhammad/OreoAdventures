@@ -4,21 +4,33 @@
 #include "texture.hpp"
 #include "../cstmEngine/types.hpp"
 #include "../cstmEngine/batch.hpp"
+#include <string>
 #include <vector>
 
 namespace game {
-  std::vector<std::vector<game::BlockType>> levelGet2DGrid(
-    const char *level_path, 
-    int &outLevelPoints
-  );
+  struct Level {
+    std::string m_levelRle;
+    int m_levelPoints;
 
-  void levelRenderTile(
-    cstmEngine::Batch &batch,
-    std::vector<cstmEngine::vec2> textureGrid,
-    int tileSize,
-    cstmEngine::vec2 coord,
-    game::BlockType bt
-  );
+    void loadLevel(std::string levelRle, int levelPoints);
+
+    void renderLevel(
+      cstmEngine::Batch &batch,
+      std::vector<cstmEngine::vec2> &textureGrid,
+      std::vector<cstmEngine::vec2> &quadSizes,
+      int tileSize,
+      cstmEngine::vec2 windowSize
+    );
+
+    private:
+      void renderTile(
+        cstmEngine::Batch &batch,
+        std::vector<cstmEngine::vec2> &textureGrid,
+        cstmEngine::vec2 tileSize,
+        cstmEngine::vec2 coord,
+        game::BlockType bt
+      );
+  };
 }
 
 #endif

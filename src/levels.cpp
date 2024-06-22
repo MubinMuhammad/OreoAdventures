@@ -1,87 +1,130 @@
 #include "levels.hpp"
 #include "texture.hpp"
 
-#include <fstream>
-#include <iostream>
 #include <string>
-#include <ctime>
 
-std::vector<std::vector<game::BlockType>>
-game::levelGet2DGrid(const char *level_path, int &outLevelPoints) {
-  srand((unsigned int)time(NULL));
-
-  std::ifstream ifile(level_path);
-  std::string line;
-  std::vector<std::vector<game::BlockType>> output;
-
-  if (!ifile.is_open())
-    std::cerr << "[err]: failed to load level file: `" << level_path << "`\n";
-
-  std::string num = "";
-  std::getline(ifile, line);
-
-  for (char c : line) {
-    if (c < '0' || c > '9')
-      break;
-
-    num += c;
-  }
-
-  outLevelPoints = std::stoi(num);
-
-  while (std::getline(ifile, line)) {
-    std::vector<game::BlockType> tmp;
-
-    for (char c : line) {
-      switch (c) {
-        case 'G': tmp.push_back(game::SQR_GRASS); break;
-        case 'd': tmp.push_back(game::SQR_DIRT); break;
-        case 'T': tmp.push_back(
-          static_cast<game::BlockType>
-          (41 + rand() % 4)
-        ); break;
-        case 'B': tmp.push_back(
-          static_cast<game::BlockType>
-          (game::SQR_BUSH1 + rand() % 3)
-        ); break;
-        case '?': tmp.push_back(game::SQR_QUESTION_BLOCK); break;
-        case 'C': tmp.push_back(game::SQR_COIN); break;
-        case 'D': tmp.push_back(game::SQR_DOOR); break;
-        case 'W': tmp.push_back(game::SQR_WOODPILE); break;
-        case 'w': tmp.push_back(game::SQR_WATER); break;
-        case 'S': tmp.push_back(game::SQR_SLAB); break;
-        case 's': tmp.push_back(game::SQR_SAND); break;
-        case '_': tmp.push_back(game::SQR_SLAB); break;
-        case 'U': tmp.push_back(game::SQR_SLAB); break;
-        case 'b': tmp.push_back(game::SQR_BOX); break;
-        case 'f': tmp.push_back(game::SQR_FENCE); break;
-        default: tmp.push_back(game::_SQR_EMPTY); break;
-      }
-    }
-
-    output.push_back(tmp);
-  }
-
-  return output;
+void game::Level::loadLevel(std::string levelRle, int levelPoints) {
+  m_levelRle = levelRle;
+  m_levelPoints = levelPoints;
 }
 
-void game::levelRenderTile(
+void game::Level::renderLevel(
   cstmEngine::Batch &batch,
-  std::vector<cstmEngine::vec2> textureGrid,
+  std::vector<cstmEngine::vec2> &textureGrid,
+  std::vector<cstmEngine::vec2> &quadSizes,
   int tileSize,
+  cstmEngine::vec2 windowSize
+) {
+  cstmEngine::vec2 tilePos = {
+    -windowSize.x / 2.0f + tileSize / 2.0f,
+    -windowSize.y / 2.0f + tileSize / 2.0f
+  };
+
+  int rleNum = 0;
+  std::string rleNumStr = "";
+  game::BlockType bt;
+
+  for (char c : m_levelRle) {
+    if (c == '\n') {
+      tilePos.x = -windowSize.x / 2.0f + tileSize / 2.0f;
+      tilePos.y += tileSize;
+      continue;
+    }
+
+    if (!(c >= '0' && c <= '9')) {
+      rleNum = std::stoi(rleNumStr);
+      rleNumStr = "";
+
+      switch (c) {
+        case '|':
+          continue;
+        case ' ':
+          tilePos.x += rleNum * tileSize;
+          continue;
+        case 'G':
+          bt = SQR_GRASS;
+          break;
+        case 'd':
+          bt = SQR_DIRT;
+          break;
+        case 'T':
+          bt = (game::BlockType)(SQR_TREE1 + rand() % 4);
+          break;
+        case 'B':
+          bt = (game::BlockType)(SQR_BUSH1 + rand() % 3);
+          break;
+        case '?':
+          bt = SQR_QUESTION_BLOCK;
+          break;
+        case 'C':
+          bt = SQR_COIN;
+          break;
+        case 'D':
+          bt = SQR_DOOR;
+          break;
+        case 'W':
+          bt = SQR_WOODPILE;
+          break;
+        case 'w':
+          bt = SQR_WATER;
+          break;
+        case 'S':
+          bt = SQR_SLAB;
+          break;
+        case 's':
+          bt = SQR_SAND;
+          break;
+        case '_':
+          bt = SQR_SLAB;
+          break;
+        case 'U':
+          bt = SQR_SLAB;
+          break;
+        case 'b':
+          bt = SQR_BOX;
+          break;
+        case 'f':
+          bt = SQR_FENCE;
+          break;
+        default:
+          bt = SQR_QUESTION_BLOCK;
+          break;
+      }
+
+      for (int i = 0; i < rleNum; i++) {
+        renderTile(
+          batch,
+          textureGrid,
+          {
+            quadSizes[bt].x * tileSize,
+            quadSizes[bt].y * tileSize
+          },
+          tilePos,
+          bt
+        );
+        tilePos.x += tileSize;
+      }
+
+      continue;
+    }
+
+    rleNumStr += c;
+  }
+}
+
+void game::Level::renderTile(
+  cstmEngine::Batch &batch,
+  std::vector<cstmEngine::vec2> &textureGrid,
+  cstmEngine::vec2 tileSize,
   cstmEngine::vec2 coord,
   game::BlockType bt
 ) {
-  cstmEngine::vec2 texCoords[] = {
-    textureGrid[bt * 4 + 0],
-    textureGrid[bt * 4 + 1],
-    textureGrid[bt * 4 + 2],
-    textureGrid[bt * 4 + 3],
-  };
+  cstmEngine::vec2 texCoords[4];
+  game::textureGetCoords(textureGrid, bt, texCoords);
 
   batch.drawQuadT(
-    {(float)tileSize, (float)tileSize},
-    {coord.x * tileSize, coord.y * tileSize},
+    {tileSize.x, tileSize.y},
+    {coord.x, coord.y},
     texCoords
   );
 }

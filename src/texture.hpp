@@ -22,14 +22,20 @@ namespace game {
     SQR_NITROGEN_BOX, SQR_BOX,
     SQR_BANGLADESH_FLAG, SQR_UNKNOWN,
     SQR_TREE1 = 41, SQR_TREE2,
-    SQR_TREE3, SQR_TREE4, _SQR_EMPTY
+    SQR_TREE3, SQR_TREE4
   };
 
-  void getTexCoordsFromAtlas(
+  void textureGetCoordsIdxs(
     std::vector<cstmEngine::vec2> &v,
-    std::vector<cstmEngine::vec2> &quad_size,
-    cstmEngine::vec2 atlas_wh,
-    int tex_factor
+    std::vector<cstmEngine::vec2> &quadSize,
+    cstmEngine::vec2 atlasWH,
+    int texFactor
+  );
+
+  void textureGetCoords(
+    std::vector<cstmEngine::vec2> &texGrid,
+    game::BlockType bkType,
+    cstmEngine::vec2 *outTexCoords
   );
 }
 
