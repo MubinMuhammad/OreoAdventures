@@ -1,5 +1,10 @@
 #include "player.hpp"
-#include <iostream>
+#include "texture.hpp"
+
+void game::Player::setSize(cstmEngine::vec2 size) {
+  m_phy.m_size.x = size.x;
+  m_phy.m_size.y = size.y;
+}
 
 void game::Player::render(
   cstmEngine::Batch &batch, 
@@ -12,5 +17,5 @@ void game::Player::render(
     textureGrid[game::SQR_PLAYER1 * 4 + (m_viewSide == SIDE_RIGHT ? 3 : 0)]
   };
 
-  batch.drawQuadT(m_size, {m_phy.m_pos}, texCoords);
+  batch.drawQuadT(m_phy.m_size, {m_phy.m_pos}, texCoords);
 }

@@ -22,7 +22,6 @@
 #include "levelsRle.hpp"
 #include "levels.hpp"
 
-#include <GLFW/glfw3.h>
 #include <cstddef>
 #include <cstdint>
 #include <ctime>
@@ -75,7 +74,7 @@ int main() {
   gameBatch.create();
 
   game::Player player;
-  player.m_size = {GAME_SQUARE_SIZE, GAME_SQUARE_SIZE};
+  player.setSize({GAME_SQUARE_SIZE, GAME_SQUARE_SIZE});
   player.m_phy.m_mass = 50.0f;
 
   gameEngine::Time gameTime;
@@ -93,13 +92,15 @@ int main() {
       cstmEngine::vec2 playerForce;
 
       if (glfwGetKey(gameWindow.m_window, GLFW_KEY_A) == GLFW_PRESS ||
-          glfwGetKey(gameWindow.m_window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        playerForce.x = -500.0f;
+          glfwGetKey(gameWindow.m_window, GLFW_KEY_LEFT) == GLFW_PRESS ||
+          glfwGetKey(gameWindow.m_window, GLFW_KEY_H) == GLFW_PRESS) {
+        playerForce.x = -1000.0f;
         player.m_viewSide = game::SIDE_LEFT;
       }
       else if (glfwGetKey(gameWindow.m_window, GLFW_KEY_D) == GLFW_PRESS ||
-               glfwGetKey(gameWindow.m_window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        playerForce.x = 500.0f;
+               glfwGetKey(gameWindow.m_window, GLFW_KEY_RIGHT) == GLFW_PRESS ||
+               glfwGetKey(gameWindow.m_window, GLFW_KEY_L) == GLFW_PRESS) {
+        playerForce.x = 1000.0f;
         player.m_viewSide = game::SIDE_RIGHT;
       }
       else
@@ -111,6 +112,11 @@ int main() {
         playerForce.y = 0.0f;
 
       player.m_phy.update(gameTime.m_delta, playerForce, {0.7f, 0.0f});
+
+      player.m_phy.m_velocity.x = 
+          player.m_phy.m_velocity.x > 0.0f ?
+          std::min(player.m_phy.m_velocity.x,  500.0f) :
+          std::max(player.m_phy.m_velocity.x, -500.0f);
     }
 
     // Render Scope
@@ -144,7 +150,8 @@ int main() {
         gameBatch, gameAtlasGrid,
         gameQuadSizes,
         GAME_SQUARE_SIZE,
-        {(float)gameWindow.m_width, (float)gameWindow.m_height}
+        {(float)gameWindow.m_width, (float)gameWindow.m_height},
+        GAME_SEED
       );
 
       // Drawing The Player

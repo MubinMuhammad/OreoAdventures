@@ -1,6 +1,7 @@
 #include "levels.hpp"
 #include "texture.hpp"
 
+#include <iostream>
 #include <string>
 
 void game::Level::loadLevel(std::string levelRle, int levelPoints) {
@@ -13,12 +14,17 @@ void game::Level::renderLevel(
   std::vector<cstmEngine::vec2> &textureGrid,
   std::vector<cstmEngine::vec2> &quadSizes,
   int tileSize,
-  cstmEngine::vec2 windowSize
+  cstmEngine::vec2 windowSize,
+  uint32_t gameSeed
 ) {
+  srand(gameSeed);
+
   cstmEngine::vec2 tilePos = {
     -windowSize.x / 2.0f + tileSize / 2.0f,
     -windowSize.y / 2.0f + tileSize / 2.0f
   };
+
+  cstmEngine::vec2 offset = {0, 0};
 
   int rleNum = 0;
   std::string rleNumStr = "";
@@ -48,10 +54,12 @@ void game::Level::renderLevel(
           bt = SQR_DIRT;
           break;
         case 'T':
-          bt = (game::BlockType)(SQR_TREE1 + rand() % 4);
+          bt = (game::BlockType)(SQR_TREE1/* + rand() % 4*/);
+          offset = {0.5, 0.5};
           break;
         case 'B':
           bt = (game::BlockType)(SQR_BUSH1 + rand() % 3);
+          offset = {0.5, 0.0};
           break;
         case '?':
           bt = SQR_QUESTION_BLOCK;
@@ -99,12 +107,16 @@ void game::Level::renderLevel(
             quadSizes[bt].x * tileSize,
             quadSizes[bt].y * tileSize
           },
-          tilePos,
+          {
+            tilePos.x + (offset.x * tileSize),
+            tilePos.y + (offset.y * tileSize)
+          },
           bt
         );
         tilePos.x += tileSize;
       }
 
+      offset = {0, 0};
       continue;
     }
 

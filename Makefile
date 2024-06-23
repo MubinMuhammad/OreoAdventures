@@ -10,7 +10,7 @@ all:
 	mv levelsRle.hpp src/
 	$(COMPILER) $(SRC_FILES) -o $(EXE) $(INCLUDE_DIR) $(LIBS)
 
-run:
+run: all
 	./MarioAdventures
 
 clean:

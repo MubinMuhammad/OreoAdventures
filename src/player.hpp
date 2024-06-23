@@ -4,7 +4,6 @@
 #include "../gameEngine/physics.hpp"
 #include "../cstmEngine/types.hpp"
 #include "../cstmEngine/batch.hpp"
-#include "texture.hpp"
 #include <vector>
 
 namespace game {
@@ -14,10 +13,10 @@ namespace game {
 
   struct Player {
     gameEngine::Physics m_phy;
-    cstmEngine::vec2 m_size = {30, 30};
     playerViewSide m_viewSide = SIDE_RIGHT;
     bool m_onGround = false;
 
+    void setSize(cstmEngine::vec2 size);
     void render(cstmEngine::Batch &batch, std::vector<cstmEngine::vec2> &textureGrid);
   };
 }

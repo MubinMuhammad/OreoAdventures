@@ -19,7 +19,8 @@ namespace game {
       std::vector<cstmEngine::vec2> &textureGrid,
       std::vector<cstmEngine::vec2> &quadSizes,
       int tileSize,
-      cstmEngine::vec2 windowSize
+      cstmEngine::vec2 windowSize,
+      uint32_t gameSeed
     );
 
     private:

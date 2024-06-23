@@ -1,4 +1,5 @@
 #include "texture.hpp"
+#include <iostream>
 
 static void textureCropAtlas(
   cstmEngine::vec2 *out_coord1,
@@ -101,11 +102,12 @@ void game::textureGetCoordsIdxs(
 
   k += 4;
   textureCropAtlas(
-    &v[k], &v[k + 1], &v[k + 2], &v[k + 3], 
+    &v[k], &v[k + 1], &v[k + 2], &v[k + 3],
     atlas_wh, tex_factor, {1, 1}, {(float)(tex_x % 8), (float)tex_y}
   );
   tex_x++;
   if (tex_x % 8 == 0) tex_y++;
+
   k += 4;
   textureCropAtlas(
     &v[k], &v[k + 1], &v[k + 2], &v[k + 3], 
@@ -113,6 +115,7 @@ void game::textureGetCoordsIdxs(
   );
   tex_x++;
   if (tex_x % 8 == 0) tex_y++;
+
   k += 4;
   textureCropAtlas(
     &v[k], &v[k + 1], &v[k + 2], &v[k + 3], 
@@ -120,19 +123,32 @@ void game::textureGetCoordsIdxs(
   );
   tex_x += 2;
   if (tex_x % 8 == 0) tex_y++;
+  printf("%d\n", tex_x);
 
-  for (int i = 29; i < 41; i++) {
+  for (int i = 29; i < 35; i++) {
     k += 4;
     textureCropAtlas(
       &v[k], &v[k + 1], &v[k + 2], &v[k + 3], 
       atlas_wh, tex_factor, {1, 1}, {(float)(tex_x % 8), (float)tex_y}
     );
     tex_x++;
-    if (tex_x % 8 == 0) {
-      tex_y++;
-      tex_x += 2;
-    }
   }
+
+  if (tex_x % 8 == 0) {
+    tex_y++;
+    tex_x += 2;
+  }
+
+  for (int i = 35; i < 41; i++) {
+    k += 4;
+    textureCropAtlas(
+      &v[k], &v[k + 1], &v[k + 2], &v[k + 3], 
+      atlas_wh, tex_factor, {1, 1}, {(float)(tex_x % 8), (float)tex_y}
+    );
+    tex_x++;
+  }
+
+  if (tex_x % 8 == 0) tex_y++;
 
   for (int i = 41; i < 45; i++) {
     k += 4;
@@ -143,6 +159,12 @@ void game::textureGetCoordsIdxs(
     tex_x += 2;
     if (tex_x % 8 == 0) tex_y++;
   }
+
+  std::cout
+    << v[game::SQR_TREE1 * 4 + 0].x << ", " << v[game::SQR_TREE1 * 4 + 0].y << '\n'
+    << v[game::SQR_TREE1 * 4 + 1].x << ", " << v[game::SQR_TREE1 * 4 + 1].y << '\n'
+    << v[game::SQR_TREE1 * 4 + 2].x << ", " << v[game::SQR_TREE1 * 4 + 2].y << '\n'
+    << v[game::SQR_TREE1 * 4 + 3].x << ", " << v[game::SQR_TREE1 * 4 + 3].y << "\n\n";
 }
 
 void game::textureGetCoords(
