@@ -147,12 +147,18 @@ int main() {
       );
 
       level1.renderLevel(
-        gameBatch, gameAtlasGrid,
+        gameBatch, player,
+        gameAtlasGrid,
         gameQuadSizes,
         GAME_SQUARE_SIZE,
         {(float)gameWindow.m_width, (float)gameWindow.m_height},
         GAME_SEED
       );
+      
+      // before rendering Calculation
+      {
+
+      }
 
       // Drawing The Player
       player.render(gameBatch, gameAtlasGrid);

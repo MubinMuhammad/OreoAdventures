@@ -18,6 +18,12 @@ namespace gameEngine {
       cstmEngine::vec2 force,
       cstmEngine::vec2 frictionCoefficient
     );
+
+    bool checkCollision(
+      cstmEngine::vec2 objCoords,
+      cstmEngine::vec2 objSizeFactors,
+      int squareSize
+    );
   };
 }
 

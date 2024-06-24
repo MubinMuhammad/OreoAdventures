@@ -1,7 +1,6 @@
 #include "levels.hpp"
 #include "texture.hpp"
 
-#include <iostream>
 #include <string>
 
 void game::Level::loadLevel(std::string levelRle, int levelPoints) {
@@ -11,6 +10,7 @@ void game::Level::loadLevel(std::string levelRle, int levelPoints) {
 
 void game::Level::renderLevel(
   cstmEngine::Batch &batch,
+  game::Player player,
   std::vector<cstmEngine::vec2> &textureGrid,
   std::vector<cstmEngine::vec2> &quadSizes,
   int tileSize,
@@ -54,7 +54,7 @@ void game::Level::renderLevel(
           bt = SQR_DIRT;
           break;
         case 'T':
-          bt = (game::BlockType)(SQR_TREE1/* + rand() % 4*/);
+          bt = (game::BlockType)(SQR_TREE1 + rand() % 4);
           offset = {0.5, 0.5};
           break;
         case 'B':
@@ -100,6 +100,22 @@ void game::Level::renderLevel(
       }
 
       for (int i = 0; i < rleNum; i++) {
+        if (
+          player.m_phy.checkCollision(
+            {tilePos.x + (offset.x * tileSize),
+             tilePos.y + (offset.y * tileSize)},
+            {quadSizes[bt].x, quadSizes[bt].y},
+            tileSize
+          )
+        ) {
+          player.resolveCollision(
+            {tilePos.x + (offset.x * tileSize),
+             tilePos.y + (offset.y * tileSize)},
+            {quadSizes[bt].x, quadSizes[bt].y},
+            tileSize
+          );
+        }
+
         renderTile(
           batch,
           textureGrid,

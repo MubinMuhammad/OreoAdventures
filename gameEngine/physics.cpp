@@ -29,3 +29,23 @@ void gameEngine::Physics::update(
   m_pos.x += m_velocity.x * deltaTime;
   m_pos.y += m_velocity.y * deltaTime;
 }
+
+bool gameEngine::Physics::checkCollision(
+  cstmEngine::vec2 objCoords,
+  cstmEngine::vec2 objSizeFactors,
+  int squareSize
+) {
+  float objMaxX = m_pos.x + (m_size.x / 2);
+  float objMaxY = m_pos.y + (m_size.y / 2);
+  float objMinX = m_pos.x - (m_size.x / 2);
+  float objMinY = m_pos.y - (m_size.y / 2);
+
+  float givenObjMaxX = objCoords.x + ((objSizeFactors.x * squareSize) / 2);
+  float givenObjMaxY = objCoords.y + ((objSizeFactors.x * squareSize) / 2);
+  float givenObjMinX = objCoords.x - ((objSizeFactors.x * squareSize) / 2);
+  float givenObjMinY = objCoords.y - ((objSizeFactors.y * squareSize) / 2);
+
+  return
+    objMinX < givenObjMaxX && objMaxX > givenObjMinX &&
+    objMinY < givenObjMaxY && objMaxY > givenObjMinY; 
+}

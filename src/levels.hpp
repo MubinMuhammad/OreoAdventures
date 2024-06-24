@@ -4,6 +4,7 @@
 #include "texture.hpp"
 #include "../cstmEngine/types.hpp"
 #include "../cstmEngine/batch.hpp"
+#include "player.hpp"
 #include <string>
 #include <vector>
 
@@ -16,6 +17,7 @@ namespace game {
 
     void renderLevel(
       cstmEngine::Batch &batch,
+      game::Player player,
       std::vector<cstmEngine::vec2> &textureGrid,
       std::vector<cstmEngine::vec2> &quadSizes,
       int tileSize,
