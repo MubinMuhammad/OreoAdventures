@@ -34,6 +34,16 @@ namespace game {
         game::BlockType bt
       );
   };
+
+  void renderCloud(
+    cstmEngine::Batch &batch,
+    std::vector<cstmEngine::vec2> &textureGrid,
+    std::vector<cstmEngine::vec2> &quadSizes,
+    int tileSize,
+    int cloudHeight,
+    uint32_t variability,
+    uint32_t seed
+  );
 }
 
 #endif

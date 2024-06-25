@@ -1,5 +1,5 @@
-#ifndef GAME_ENGINE_PHYSICS_H_
-#define GAME_ENGINE_PHYSICS_H_
+#ifndef GAME_ENGINE_PHYSICS_HPP_
+#define GAME_ENGINE_PHYSICS_HPP_
 
 #include "../cstmEngine/types.hpp"
 

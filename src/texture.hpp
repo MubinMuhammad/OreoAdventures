@@ -31,12 +31,6 @@ namespace game {
     cstmEngine::vec2 atlasWH,
     int texFactor
   );
-
-  void textureGetCoords(
-    std::vector<cstmEngine::vec2> &texGrid,
-    game::BlockType bkType,
-    cstmEngine::vec2 *outTexCoords
-  );
 }
 
 #endif

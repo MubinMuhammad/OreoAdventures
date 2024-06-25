@@ -1,6 +1,8 @@
 #include "levels.hpp"
 #include "texture.hpp"
+#include "../gameEngine/texture.hpp"
 
+#include <cstdlib>
 #include <string>
 
 void game::Level::loadLevel(std::string levelRle, int levelPoints) {
@@ -100,21 +102,21 @@ void game::Level::renderLevel(
       }
 
       for (int i = 0; i < rleNum; i++) {
-        if (
-          player.m_phy.checkCollision(
-            {tilePos.x + (offset.x * tileSize),
-             tilePos.y + (offset.y * tileSize)},
-            {quadSizes[bt].x, quadSizes[bt].y},
-            tileSize
-          )
-        ) {
-          player.resolveCollision(
-            {tilePos.x + (offset.x * tileSize),
-             tilePos.y + (offset.y * tileSize)},
-            {quadSizes[bt].x, quadSizes[bt].y},
-            tileSize
-          );
-        }
+        /*if (*/
+        /*  player.m_phy.checkCollision(*/
+        /*    {tilePos.x + (offset.x * tileSize),*/
+        /*     tilePos.y + (offset.y * tileSize)},*/
+        /*    {quadSizes[bt].x, quadSizes[bt].y},*/
+        /*    tileSize*/
+        /*  )*/
+        /*) {*/
+        /*  player.resolveCollision(*/
+        /*    {tilePos.x + (offset.x * tileSize),*/
+        /*     tilePos.y + (offset.y * tileSize)},*/
+        /*    {quadSizes[bt].x, quadSizes[bt].y},*/
+        /*    tileSize*/
+        /*  );*/
+        /*}*/
 
         renderTile(
           batch,
@@ -148,11 +150,39 @@ void game::Level::renderTile(
   game::BlockType bt
 ) {
   cstmEngine::vec2 texCoords[4];
-  game::textureGetCoords(textureGrid, bt, texCoords);
+  gameEngine::textureGetCoords(textureGrid, bt, texCoords);
 
   batch.drawQuadT(
     {tileSize.x, tileSize.y},
     {coord.x, coord.y},
     texCoords
   );
+}
+
+void game::renderCloud(
+  cstmEngine::Batch &batch,
+  std::vector<cstmEngine::vec2> &textureGrid,
+  std::vector<cstmEngine::vec2> &quadSizes,
+  int tileSize,
+  int cloudHeight,
+  uint32_t variability,
+  uint32_t seed
+) {
+  srand(seed);
+
+  for (int i = -4; i <= 128; i += (rand() % 6) + 1) {
+    int y = rand() % ((variability * 2) + (cloudHeight - variability));
+
+    game::BlockType bt = (game::BlockType)(SQR_CLOUD1 + rand() % 4);
+
+    cstmEngine::vec2 texCoords[4];
+    gameEngine::textureGetCoords(textureGrid, bt, texCoords);
+
+    cstmEngine::vec2 cloudSize = {
+      quadSizes[bt].x * tileSize * 2,
+      quadSizes[bt].y * tileSize * 2
+    };
+
+    batch.drawQuadT(cloudSize, {(float)i * tileSize, (float)y * tileSize}, texCoords);
+  }
 }

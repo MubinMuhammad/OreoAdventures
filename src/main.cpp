@@ -38,14 +38,17 @@ void windowResizeCallback(GLFWwindow *window, int w, int h) {
 }
 
 int main() {
-  const float GAME_SQUARE_SIZE = 60;
+  const float GAME_TILE_SIZE = 60;
   const uint32_t GAME_SEED = time(NULL);
 
   gameWindow.create(720, 480, "Mario Adventures");
   glfwSetWindowSizeCallback(gameWindow.m_window, windowResizeCallback);
 
   cstmEngine::Shader gameShader;
-  gameShader.create(vertex_shader, fragment_shader);
+  gameShader.create(gameVertexShader, gameFragmentShader);
+
+  cstmEngine::Shader uiShader;
+  gameShader.create(uiVertexShader, uiFragmentShader);
 
   stbi_set_flip_vertically_on_load(true);
 
@@ -74,7 +77,7 @@ int main() {
   gameBatch.create();
 
   game::Player player;
-  player.setSize({GAME_SQUARE_SIZE, GAME_SQUARE_SIZE});
+  player.setSize({GAME_TILE_SIZE, GAME_TILE_SIZE});
   player.m_phy.m_mass = 50.0f;
 
   gameEngine::Time gameTime;
@@ -108,10 +111,12 @@ int main() {
 
       if (glfwGetKey(gameWindow.m_window, GLFW_KEY_SPACE) == GLFW_PRESS)
         playerForce.y = 500.0f;
+      else if (glfwGetKey(gameWindow.m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        playerForce.y = -500.0f;
       else
         playerForce.y = 0.0f;
 
-      player.m_phy.update(gameTime.m_delta, playerForce, {0.7f, 0.0f});
+      player.m_phy.update(gameTime.m_delta, playerForce, {0.7f, 0.7f});
 
       player.m_phy.m_velocity.x = 
           player.m_phy.m_velocity.x > 0.0f ?
@@ -121,7 +126,7 @@ int main() {
 
     // Render Scope
     {
-      gameWindow.beginFrame(129/255.0f, 151/255.0f, 150/255.0f, 1.0f);
+      gameWindow.beginFrame(115/255.0f, 190/255.0f, 211/255.0f, 1.0f);
       gameBatch.beginFrame();
 
       gameShader.use();
@@ -132,11 +137,17 @@ int main() {
         -half_height, half_height,
         0.1f, 100.0f
       );
+
       glUniformMatrix4fv(
-        glGetUniformLocation(gameShader.getShaderProgram(), "ortho_proj"),
+        glGetUniformLocation(gameShader.getShaderProgram(), "orthoProj"),
         1, GL_FALSE, glm::value_ptr(ortho_proj)
       );
 
+      /*glUniformMatrix4fv(*/
+      /*  glGetUniformLocation(uiShader.getShaderProgram(), "orthoProj"),*/
+      /*  1, GL_FALSE, glm::value_ptr(ortho_proj)*/
+      /*);*/
+      /**/
       glm::mat4 view = glm::translate(
         glm::mat4(1.0f),
         glm::vec3(std::min(0.0f, -player.m_phy.m_pos.x), 0.0f, -1.0f)
@@ -145,21 +156,34 @@ int main() {
         glGetUniformLocation(gameShader.getShaderProgram(), "view"),
         1, GL_FALSE, glm::value_ptr(view)
       );
+      /**/
+      /*view = glm::translate(*/
+      /*  glm::mat4(1.0f),*/
+      /*  glm::vec3(0.0f, 0.0f, -1.0f)*/
+      /*);*/
+      /*glUniformMatrix4fv(*/
+      /*  glGetUniformLocation(uiShader.getShaderProgram(), "view"),*/
+      /*  1, GL_FALSE, glm::value_ptr(view)*/
+      /*);*/
+
+      game::renderCloud(
+        gameBatch,
+        gameAtlasGrid,
+        gameQuadSizes,
+        GAME_TILE_SIZE,
+        2, 0,
+        GAME_SEED
+      );
 
       level1.renderLevel(
         gameBatch, player,
         gameAtlasGrid,
         gameQuadSizes,
-        GAME_SQUARE_SIZE,
+        GAME_TILE_SIZE,
         {(float)gameWindow.m_width, (float)gameWindow.m_height},
         GAME_SEED
       );
       
-      // before rendering Calculation
-      {
-
-      }
-
       // Drawing The Player
       player.render(gameBatch, gameAtlasGrid);
 
