@@ -29,7 +29,8 @@ namespace cstmEngine {
         glTexImage2D(
           GL_TEXTURE_2D, 0, 
           img_data.color_channels == 3 ? GL_RGB : GL_RGBA,
-          img_data.width, img_data.height, 0, img_data.color_channels == 3 ? GL_RGB : GL_RGBA,
+          img_data.width, img_data.height, 0,
+          img_data.color_channels == 3 ? GL_RGB : GL_RGBA,
           GL_UNSIGNED_BYTE, img_data.data
         );
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -43,10 +44,10 @@ namespace cstmEngine {
         glDeleteTextures(1, &m_texture);
       }
 
-      void use(int slot, const char *uniform_name, cstmEngine::Shader* const _shader) {
+      void use(int slot, const char *uniformName, cstmEngine::Shader *_shader) {
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, m_texture);
-        glUniform1i(glGetUniformLocation(_shader->getShaderProgram(), uniform_name), slot);
+        glUniform1i(glGetUniformLocation(_shader->getShaderProgram(), uniformName), slot);
       }
     private:
       unsigned int m_texture;

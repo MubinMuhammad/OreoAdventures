@@ -13,6 +13,7 @@ void game::Level::loadLevel(std::string levelRle, int levelPoints) {
 void game::Level::renderLevel(
   cstmEngine::Batch &batch,
   game::Player player,
+  PlayerLevelState &playerState,
   std::vector<cstmEngine::vec2> &textureGrid,
   std::vector<cstmEngine::vec2> &quadSizes,
   int tileSize,
@@ -26,7 +27,9 @@ void game::Level::renderLevel(
     -windowSize.y / 2.0f + tileSize / 2.0f
   };
 
-  cstmEngine::vec2 offset = {0, 0};
+  cstmEngine::vec2 tileOffset = {0, 0};
+
+  int coinIdx = 0;
 
   int rleNum = 0;
   std::string rleNumStr = "";
@@ -57,11 +60,11 @@ void game::Level::renderLevel(
           break;
         case 'T':
           bt = (game::BlockType)(SQR_TREE1 + rand() % 4);
-          offset = {0.5, 0.5};
+          tileOffset = {0.5, 0.5};
           break;
         case 'B':
           bt = (game::BlockType)(SQR_BUSH1 + rand() % 3);
-          offset = {0.5, 0.0};
+          tileOffset = {0.5, 0.0};
           break;
         case '?':
           bt = SQR_QUESTION_BLOCK;
@@ -101,40 +104,50 @@ void game::Level::renderLevel(
           break;
       }
 
-      for (int i = 0; i < rleNum; i++) {
-        /*if (*/
-        /*  player.m_phy.checkCollision(*/
-        /*    {tilePos.x + (offset.x * tileSize),*/
-        /*     tilePos.y + (offset.y * tileSize)},*/
-        /*    {quadSizes[bt].x, quadSizes[bt].y},*/
-        /*    tileSize*/
-        /*  )*/
-        /*) {*/
-        /*  player.resolveCollision(*/
-        /*    {tilePos.x + (offset.x * tileSize),*/
-        /*     tilePos.y + (offset.y * tileSize)},*/
-        /*    {quadSizes[bt].x, quadSizes[bt].y},*/
-        /*    tileSize*/
-        /*  );*/
-        /*}*/
+      game::BlockType btCpy = bt;
 
-        renderTile(
-          batch,
-          textureGrid,
-          {
-            quadSizes[bt].x * tileSize,
-            quadSizes[bt].y * tileSize
-          },
-          {
-            tilePos.x + (offset.x * tileSize),
-            tilePos.y + (offset.y * tileSize)
-          },
-          bt
-        );
+      for (int i = 0; i < rleNum; i++) {
+        if (bt == SQR_COIN) {
+          if (!(coinState & (1 << coinIdx))) {
+            bt = _SQR_EMPTY;
+          }
+        }
+
+        if (
+          player.m_phy.checkCollision(
+            {tilePos.x + (tileOffset.x * tileSize),
+             tilePos.y + (tileOffset.y * tileSize)},
+            {quadSizes[bt].x, quadSizes[bt].y},
+            tileSize
+          ) && 
+          bt == SQR_COIN
+        ) {
+          coinState &= ~(1 << coinIdx);
+          playerState.score += 10;
+        }
+
+        if (bt != _SQR_EMPTY || (coinState & (1 << coinIdx))) {
+          renderTile(
+            batch,
+            textureGrid,
+            {
+              quadSizes[bt].x * tileSize,
+              quadSizes[bt].y * tileSize
+            },
+            {
+              tilePos.x + (tileOffset.x * tileSize),
+              tilePos.y + (tileOffset.y * tileSize)
+            },
+            bt
+          );
+        }
+
         tilePos.x += tileSize;
+        if (bt == _SQR_EMPTY) bt = btCpy;
+        if (bt == SQR_COIN) coinIdx++;
       }
 
-      offset = {0, 0};
+      tileOffset = {0, 0};
       continue;
     }
 

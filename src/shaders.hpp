@@ -27,10 +27,10 @@ const char *gameFragmentShader =
   "in vec2 v_texCoords;\n"
   "in vec3 v_color;\n"
 
-  "uniform sampler2D game_atlas;\n"
+  "uniform sampler2D gameAtlas;\n"
 
   "void main() {\n"
-  "  px_color = texture2D(game_atlas, v_texCoords);\n"
+  "  px_color = texture2D(gameAtlas, v_texCoords);\n"
   "}";
 
 const char *uiVertexShader =
@@ -59,10 +59,10 @@ const char *uiFragmentShader =
   "in vec2 v_texCoords;\n"
   "in vec3 v_color;\n"
 
-  "uniform sampler2D gameAtlas;\n"
+  "uniform sampler2D fontAtlas;\n"
 
   "void main() {\n"
-  "  pxColor = texture2D(gameAtlas, v_texCoords) * vec4(v_color, 1.0f);\n"
+  "  pxColor = texture2D(fontAtlas, v_texCoords) * vec4(v_color, 1.0f);\n"
   "}";
 
 #endif

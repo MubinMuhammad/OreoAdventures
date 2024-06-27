@@ -18,11 +18,6 @@ namespace game {
 
     void setSize(cstmEngine::vec2 size);
     void render(cstmEngine::Batch &batch, std::vector<cstmEngine::vec2> &textureGrid);
-    void resolveCollision(
-      cstmEngine::vec2 objCoords,
-      cstmEngine::vec2 objSizeFactors,
-      int squareSize
-    );
   };
 }
 

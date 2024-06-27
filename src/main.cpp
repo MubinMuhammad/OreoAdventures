@@ -5,7 +5,6 @@
 
 // Graphics Engine Includes
 #include "../cstmEngine/window.hpp"
-#include "../cstmEngine/buffer.hpp"
 #include "../cstmEngine/shader.hpp"
 #include "../cstmEngine/texture.hpp"
 #include "../cstmEngine/batch.hpp"
@@ -13,6 +12,7 @@
 // Game Engine Includes
 #include "../gameEngine/time.hpp"
 #include "../gameEngine/physics.hpp"
+#include "../gameEngine/font.hpp"
 
 // Game Includes
 #include "player.hpp"
@@ -48,7 +48,7 @@ int main() {
   gameShader.create(gameVertexShader, gameFragmentShader);
 
   cstmEngine::Shader uiShader;
-  gameShader.create(uiVertexShader, uiFragmentShader);
+  uiShader.create(uiVertexShader, uiFragmentShader);
 
   stbi_set_flip_vertically_on_load(true);
 
@@ -73,12 +73,35 @@ int main() {
   std::vector<cstmEngine::vec2> gameQuadSizes;
   game::textureGetCoordsIdxs(gameAtlasGrid, gameQuadSizes, gameAtlasWH, 32);
 
+  cstmEngine::TextureData fontAtlasData;
+  fontAtlasData.data = stbi_load(
+    "./assets/font.png",
+    &fontAtlasData.width,
+    &fontAtlasData.height,
+    &fontAtlasData.color_channels,
+    0
+  );
+
+  cstmEngine::Texture fontAtlas;
+  fontAtlas.create(fontAtlasData);
+
+  gameEngine::Font uiFont;
+  uiFont.create({
+    (float)fontAtlasData.width,
+    (float)fontAtlasData.height
+  });
+
   cstmEngine::Batch gameBatch;
   gameBatch.create();
+
+  cstmEngine::Batch uiBatch;
+  uiBatch.create();
 
   game::Player player;
   player.setSize({GAME_TILE_SIZE, GAME_TILE_SIZE});
   player.m_phy.m_mass = 50.0f;
+
+  game::PlayerLevelState playerState;
 
   gameEngine::Time gameTime;
 
@@ -109,9 +132,11 @@ int main() {
       else
         playerForce.x =  0.0f;
 
-      if (glfwGetKey(gameWindow.m_window, GLFW_KEY_SPACE) == GLFW_PRESS)
+      if (glfwGetKey(gameWindow.m_window, GLFW_KEY_SPACE) == GLFW_PRESS ||
+          glfwGetKey(gameWindow.m_window, GLFW_KEY_K) == GLFW_PRESS)
         playerForce.y = 500.0f;
-      else if (glfwGetKey(gameWindow.m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+      else if (glfwGetKey(gameWindow.m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ||
+               glfwGetKey(gameWindow.m_window, GLFW_KEY_J) == GLFW_PRESS)
         playerForce.y = -500.0f;
       else
         playerForce.y = 0.0f;
@@ -127,28 +152,25 @@ int main() {
     // Render Scope
     {
       gameWindow.beginFrame(115/255.0f, 190/255.0f, 211/255.0f, 1.0f);
+
+      glm::mat4 orthoProj = glm::ortho(
+        -half_width, half_width,
+        -half_height, half_height,
+        0.1f, 100.0f
+      );
+      glm::mat4 view;
+
       gameBatch.beginFrame();
 
       gameShader.use();
       gameAtlas.use(0, "gameAtlas", &gameShader);
 
-      glm::mat4 ortho_proj = glm::ortho(
-        -half_width, half_width,
-        -half_height, half_height,
-        0.1f, 100.0f
-      );
-
       glUniformMatrix4fv(
         glGetUniformLocation(gameShader.getShaderProgram(), "orthoProj"),
-        1, GL_FALSE, glm::value_ptr(ortho_proj)
+        1, GL_FALSE, glm::value_ptr(orthoProj)
       );
 
-      /*glUniformMatrix4fv(*/
-      /*  glGetUniformLocation(uiShader.getShaderProgram(), "orthoProj"),*/
-      /*  1, GL_FALSE, glm::value_ptr(ortho_proj)*/
-      /*);*/
-      /**/
-      glm::mat4 view = glm::translate(
+      view = glm::translate(
         glm::mat4(1.0f),
         glm::vec3(std::min(0.0f, -player.m_phy.m_pos.x), 0.0f, -1.0f)
       );
@@ -156,15 +178,6 @@ int main() {
         glGetUniformLocation(gameShader.getShaderProgram(), "view"),
         1, GL_FALSE, glm::value_ptr(view)
       );
-      /**/
-      /*view = glm::translate(*/
-      /*  glm::mat4(1.0f),*/
-      /*  glm::vec3(0.0f, 0.0f, -1.0f)*/
-      /*);*/
-      /*glUniformMatrix4fv(*/
-      /*  glGetUniformLocation(uiShader.getShaderProgram(), "view"),*/
-      /*  1, GL_FALSE, glm::value_ptr(view)*/
-      /*);*/
 
       game::renderCloud(
         gameBatch,
@@ -177,22 +190,49 @@ int main() {
 
       level1.renderLevel(
         gameBatch, player,
+        playerState,
         gameAtlasGrid,
         gameQuadSizes,
         GAME_TILE_SIZE,
         {(float)gameWindow.m_width, (float)gameWindow.m_height},
         GAME_SEED
       );
-      
-      // Drawing The Player
+
       player.render(gameBatch, gameAtlasGrid);
 
       gameBatch.endFrame();
+
+      uiBatch.beginFrame();
+
+      uiShader.use();
+      fontAtlas.use(1, "fontAtlas", &uiShader);
+
+      glUniformMatrix4fv(
+        glGetUniformLocation(uiShader.getShaderProgram(), "orthoProj"),
+        1, GL_FALSE, glm::value_ptr(orthoProj)
+      );
+
+      view = glm::translate(
+        glm::mat4(1.0f),
+        glm::vec3(0.0f, 0.0f, -1.0f)
+      );
+      glUniformMatrix4fv(
+        glGetUniformLocation(uiShader.getShaderProgram(), "view"),
+        1, GL_FALSE, glm::value_ptr(view)
+      );
+
+      std::string uiStatusLineString = "Points:" + std::to_string(playerState.score);
+      uiFont.render(uiBatch, uiStatusLineString, {-half_width + 9 + 10, half_height - 9 - 10}, 18);
+
+      uiBatch.endFrame();
+
       gameWindow.endFrame();
     }
   }
 
   gameBatch.destroy();
+  uiBatch.destroy();
+  gameAtlas.destroy();
   gameShader.destroy();
   gameWindow.destroy();
   return 0;

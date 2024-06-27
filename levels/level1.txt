@@ -12,7 +12,7 @@
 |                                   CCC                                                   
 |                                   ___                                                   
 |                      C                                                                  
-|                      _     ___                     C                                    
+|                      _     ___                        C                                 
 |                                            T      GGGGGGGG                              
 |GGGGGGGG                              GGGGGGGGGGGGGddddddddG                            D
 |ddddddddGGGGGGGGGss     sssGGGGGGGGGGGddddddddddddddddddddddGGGGGG      GGGGGGGGGGGGGGGGd

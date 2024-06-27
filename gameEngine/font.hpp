@@ -8,14 +8,14 @@
 #include <string>
 #include <cstdint>
 
-namespace game {
+namespace gameEngine {
   struct Font {
     std::vector<cstmEngine::vec2> fontAtlasCoords;
     
     void create(cstmEngine::vec2 fontAtlasSize);
     void render(
       cstmEngine::Batch &batch,
-      std::string &str,
+      std::string str,
       cstmEngine::vec2 textPos,
       uint32_t fontSize
     );

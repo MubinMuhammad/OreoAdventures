@@ -9,15 +9,21 @@
 #include <vector>
 
 namespace game {
+  struct PlayerLevelState {
+    uint32_t score = 0;
+  };
+
   struct Level {
     std::string m_levelRle;
     int m_levelPoints;
+    uint64_t coinState = ~((uint64_t)0);
 
     void loadLevel(std::string levelRle, int levelPoints);
 
     void renderLevel(
       cstmEngine::Batch &batch,
       game::Player player,
+      PlayerLevelState &playerState,
       std::vector<cstmEngine::vec2> &textureGrid,
       std::vector<cstmEngine::vec2> &quadSizes,
       int tileSize,

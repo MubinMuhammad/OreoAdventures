@@ -22,7 +22,7 @@ namespace game {
     SQR_NITROGEN_BOX, SQR_BOX,
     SQR_BANGLADESH_FLAG, SQR_UNKNOWN,
     SQR_TREE1 = 41, SQR_TREE2,
-    SQR_TREE3, SQR_TREE4
+    SQR_TREE3, SQR_TREE4, _SQR_EMPTY
   };
 
   void textureGetCoordsIdxs(
