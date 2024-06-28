@@ -101,9 +101,10 @@ int main() {
 
   game::Player player;
   player.setSize({GAME_TILE_SIZE, GAME_TILE_SIZE});
-  player.m_phy.m_mass = 50.0f;
+  player.m_phy.m_mass = 20.0f;
 
   game::PlayerLevelState playerState;
+  bool playerInitalPosSet = false;
 
   gameEngine::Time gameTime;
   float playerNextFrameInterval = 0.005f;
@@ -112,6 +113,10 @@ int main() {
 
   game::Level level1;
   level1.loadLevel(levelRle1, levelPoints1);
+  game::Level level2;
+  level2.loadLevel(levelRle2, levelPoints2);
+  game::Level level3;
+  level3.loadLevel(levelRle3, levelPoints3);
 
   while (gameWindow.isOpen()) {
     float half_width = (float)gameWindow.m_width / 2;
@@ -149,7 +154,11 @@ int main() {
       else
         playerForce.y = 0.0f;
 
-      player.m_phy.update(gameTime.m_delta, playerForce, {0.7f, 0.7f});
+      player.m_phy.update(
+        gameTime.m_delta, playerForce, {0.7f, 0.7f},
+        {half_width, half_height}, GAME_TILE_SIZE,
+        {10.0f, 200.0f}
+      );
 
       player.m_phy.m_velocity.x = 
           player.m_phy.m_velocity.x > 0.0f ?

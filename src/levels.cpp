@@ -61,12 +61,12 @@ void game::Level::renderLevel(
           bt = SQR_DIRT;
           break;
         case 'T':
-          bt = (game::BlockType)(SQR_TREE1 + rand() % 4);
-          tileOffset = {0.5f * (textureGrid[bt].x - 1), 0.5f * (textureGrid[bt].y - 1)};
+          bt = (game::BlockType)(SQR_TREE1 + rand() % 3);
+          tileOffset = {0.5f * ((int)quadSizes[bt].x - 1), 0.5f * ((int)quadSizes[bt].y - 1)};
           break;
         case 'B':
           bt = (game::BlockType)(SQR_BUSH1 + rand() % 3);
-          tileOffset = {0.5, 0.0};
+          tileOffset = {0.5f, 0.0f};
           break;
         case '?':
           bt = SQR_QUESTION_BLOCK;
@@ -139,8 +139,10 @@ void game::Level::renderLevel(
         ) {
           if ((m_levelPoints - ((64 - __builtin_popcountll(coinState)) * 10)) > 0)
             playerState.doorMsg = true;
-          else
+          else if (levelPassed == false) {
             playerState.crntLevel++;
+            levelPassed = true;
+          }
         }
 
 
@@ -148,14 +150,8 @@ void game::Level::renderLevel(
           renderTile(
             batch,
             textureGrid,
-            {
-              quadSizes[bt].x * tileSize,
-              quadSizes[bt].y * tileSize
-            },
-            {
-              tilePos.x + (tileOffset.x * tileSize),
-              tilePos.y + (tileOffset.y * tileSize)
-            },
+            { quadSizes[bt].x * tileSize, quadSizes[bt].y * tileSize },
+            { tilePos.x + (tileOffset.x * tileSize), tilePos.y + (tileOffset.y * tileSize) },
             bt
           );
         }

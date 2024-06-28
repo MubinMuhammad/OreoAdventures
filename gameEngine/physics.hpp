@@ -9,6 +9,7 @@ namespace gameEngine {
     float m_mass;
     cstmEngine::vec2 m_size;
     cstmEngine::vec2 m_pos;
+    cstmEngine::vec2 m_tmpPos;
     cstmEngine::vec2 m_velocity;
     cstmEngine::vec2 m_accel;
     cstmEngine::vec2 m_friction;
@@ -16,7 +17,10 @@ namespace gameEngine {
     void update(
       float deltaTime,
       cstmEngine::vec2 force,
-      cstmEngine::vec2 frictionCoefficient
+      cstmEngine::vec2 frictionCoefficient,
+      cstmEngine::vec2 halfWindowSize,
+      float tileSize,
+      cstmEngine::vec2 initialPos
     );
 
     bool checkCollision(

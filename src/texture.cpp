@@ -90,7 +90,7 @@ void game::textureGetCoordsIdxs(
 
   nextTextureCoords(texCoord, k, v, {2, 4}, atlas_wh, tex_factor);
   texCoord.x += 2;
-  texCoord.y--;
+  texCoord.y++;
 
   nextTextureCoords(texCoord, k, v, {2, 3}, atlas_wh, tex_factor);
 }

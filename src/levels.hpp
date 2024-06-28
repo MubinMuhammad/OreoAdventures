@@ -20,6 +20,7 @@ namespace game {
     std::string m_levelRle;
     int m_levelPoints;
     uint64_t coinState = ~((uint64_t)0);
+    bool levelPassed = false;
 
     void loadLevel(std::string levelRle, int levelPoints);
 
