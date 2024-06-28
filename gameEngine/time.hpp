@@ -6,7 +6,6 @@ namespace gameEngine {
     float m_crnt;
     float m_last;
     float m_delta;
-    void update();
   };
 }
 

@@ -71,3 +71,33 @@ void gameEngine::Font::render(
     textPos.x += fontSize;
   }
 }
+
+void gameEngine::Font::renderCentered(
+  cstmEngine::Batch &batch,
+  std::string str,
+  cstmEngine::vec2 textPos,
+  uint32_t fontSize
+) {
+  int halfTextLength = (str.size() * fontSize) / 2;
+  textPos.x -= halfTextLength;
+
+  for (char c : str) {
+    if (c == ' ') {
+      textPos.x += fontSize;
+      continue;
+    }
+
+    uint32_t k;
+    getCharIdx(c, k);
+
+    cstmEngine::vec2 charTexCoords[4];
+    gameEngine::textureGetCoords(fontAtlasCoords, k, charTexCoords);
+
+    batch.drawQuadT(
+      {(float)fontSize, (float)fontSize},
+      textPos, charTexCoords
+    );
+
+    textPos.x += fontSize;
+  }
+}

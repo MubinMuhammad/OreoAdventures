@@ -1,16 +1,19 @@
 #ifndef GAME_LEVELS_HPP_
 #define GAME_LEVELS_HPP_
 
-#include "texture.hpp"
 #include "../cstmEngine/types.hpp"
 #include "../cstmEngine/batch.hpp"
+#include "texture.hpp"
 #include "player.hpp"
+
 #include <string>
 #include <vector>
 
 namespace game {
   struct PlayerLevelState {
     uint32_t score = 0;
+    int crntLevel = 0;
+    bool doorMsg = false;
   };
 
   struct Level {

@@ -35,6 +35,8 @@ void game::Level::renderLevel(
   std::string rleNumStr = "";
   game::BlockType bt;
 
+  playerState.doorMsg = false;
+
   for (char c : m_levelRle) {
     if (c == '\n') {
       tilePos.x = -windowSize.x / 2.0f + tileSize / 2.0f;
@@ -60,7 +62,7 @@ void game::Level::renderLevel(
           break;
         case 'T':
           bt = (game::BlockType)(SQR_TREE1 + rand() % 4);
-          tileOffset = {0.5, 0.5};
+          tileOffset = {0.5f * (textureGrid[bt].x - 1), 0.5f * (textureGrid[bt].y - 1)};
           break;
         case 'B':
           bt = (game::BlockType)(SQR_BUSH1 + rand() % 3);
@@ -125,6 +127,22 @@ void game::Level::renderLevel(
           coinState &= ~(1 << coinIdx);
           playerState.score += 10;
         }
+
+        if (
+          player.m_phy.checkCollision(
+            {tilePos.x + (tileOffset.x * tileSize),
+             tilePos.y + (tileOffset.y * tileSize)},
+            {quadSizes[bt].x, quadSizes[bt].y},
+            tileSize
+          ) && 
+          bt == SQR_DOOR
+        ) {
+          if ((m_levelPoints - ((64 - __builtin_popcountll(coinState)) * 10)) > 0)
+            playerState.doorMsg = true;
+          else
+            playerState.crntLevel++;
+        }
+
 
         if (bt != _SQR_EMPTY || (coinState & (1 << coinIdx))) {
           renderTile(

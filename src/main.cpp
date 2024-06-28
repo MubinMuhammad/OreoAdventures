@@ -22,6 +22,8 @@
 #include "levelsRle.hpp"
 #include "levels.hpp"
 
+// Other Includes
+#include <GLFW/glfw3.h>
 #include <cstddef>
 #include <cstdint>
 #include <ctime>
@@ -104,6 +106,9 @@ int main() {
   game::PlayerLevelState playerState;
 
   gameEngine::Time gameTime;
+  float playerNextFrameInterval = 0.005f;
+  gameEngine::Time playerNextFrameTimer;
+  playerNextFrameTimer.m_last = glfwGetTime();
 
   game::Level level1;
   level1.loadLevel(levelRle1, levelPoints1);
@@ -114,7 +119,10 @@ int main() {
 
     // Calculation Scope
     {
-      gameTime.update();
+      gameTime.m_crnt = glfwGetTime();
+      gameTime.m_delta = gameTime.m_crnt - gameTime.m_last;
+      gameTime.m_last = gameTime.m_crnt;
+
       cstmEngine::vec2 playerForce;
 
       if (glfwGetKey(gameWindow.m_window, GLFW_KEY_A) == GLFW_PRESS ||
@@ -145,12 +153,13 @@ int main() {
 
       player.m_phy.m_velocity.x = 
           player.m_phy.m_velocity.x > 0.0f ?
-          std::min(player.m_phy.m_velocity.x,  500.0f) :
+          std::min(player.m_phy.m_velocity.x,  500.0f):
           std::max(player.m_phy.m_velocity.x, -500.0f);
     }
 
     // Render Scope
     {
+      playerNextFrameTimer.m_crnt = glfwGetTime();
       gameWindow.beginFrame(115/255.0f, 190/255.0f, 211/255.0f, 1.0f);
 
       glm::mat4 orthoProj = glm::ortho(
@@ -198,7 +207,7 @@ int main() {
         GAME_SEED
       );
 
-      player.render(gameBatch, gameAtlasGrid);
+      player.render(gameBatch, gameAtlasGrid, playerNextFrameTimer, playerNextFrameInterval);
 
       gameBatch.endFrame();
 
@@ -222,6 +231,23 @@ int main() {
       );
 
       std::string uiStatusLineString = "Points:" + std::to_string(playerState.score);
+      uiStatusLineString += ",Level:" + std::to_string(playerState.crntLevel + 1);
+      std::string doorWarningMsg = "You need points for next level!";
+
+      if (playerState.doorMsg) {
+        int levelPoints = 0;
+
+        if (playerState.crntLevel == 0)
+          levelPoints = levelPoints1;
+        else if (playerState.crntLevel == 1)
+          levelPoints = levelPoints2;
+        else if (playerState.crntLevel == 2)
+          levelPoints = levelPoints3;
+
+        doorWarningMsg.insert(9, std::to_string(levelPoints) + " ");
+        uiFont.renderCentered(uiBatch, doorWarningMsg, {0, 0}, 18);
+      }
+
       uiFont.render(uiBatch, uiStatusLineString, {-half_width + 9 + 10, half_height - 9 - 10}, 18);
 
       uiBatch.endFrame();
