@@ -1,18 +1,18 @@
 100
-|                                                                                         
-|                                                                                         
-|                                                                                         
+|
+|
+|
+|
 |                                                                                        D
-|                                                                                        D
-|                                                   B                               GG   G
-|                                                  BBB                             Gdd  Gd
-|                                                  BBB                            Gddd  dd
-|                                                 BBBBB                         CGdddd  dd
-|                                                   L C                         Gddddd  dd
-|P           BBBB                 C              GGGGGG                        Gdddddd  dd
-|        BB   BBB                 _    CCC  ___    dddd                      CGddddddd  dd
-|       BBBBB BB           C           ___                                   Gdddddddd  dd
-|         BBBB             _                 C                              Gddddddddd  dd
-|            B                               W      GGGGGGGG         C     Gdddddddddd  dd
-|GGGGGGGG    L                         GGGGGGGGGGGGGddddddddG             Gddddddddddd  dd
-|ddddddddGGGGGGGGGGG     GGGGGGGGGGGGGGddddddddddddddddddddddGGGGGG      GGddddddddddd  dd
+|                                                                                   GG   G
+|                                                                                  Gdd  Gd
+|                                                                                 Gddd  dd
+|                                                                               CGdddd  dd
+|                                                   T C                         Gddddd  dd
+|                                 C              GGGGGG                        Gdddddd  dd
+|                                 _    CCC  ___    dddd                      CGddddddd  dd
+|                          C           ___                                   Gdddddddd  dd
+|                          _                 C                              Gddddddddd  dd
+|                                            W      GGGGGGGG         C     Gdddddddddd  dd
+|GGGGGGGG    T                         GGGGGGGGGGGGGddddddddG             Gddddddddddd  dd
+|ddddddddGGGGGGGGGGG     GGGGGGGGGGGGGGddddddddddddddddddddddGGGGGG      Gdddddddddddd  dd

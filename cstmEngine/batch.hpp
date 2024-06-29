@@ -19,7 +19,7 @@ namespace cstmEngine {
           m_indices[i + 5] = a - 1;
           a += 4;
         }
-        
+
         m_buffer.create(sizeof(m_vertices), NULL, sizeof(m_indices), m_indices);
       }
 
@@ -38,7 +38,7 @@ namespace cstmEngine {
         m_buffer.destroy();
       }
 
-      void drawQuadC(vec2 size, vec2 pos, vec3 color) {
+      void drawQuad(vec2 size, vec2 pos, vec3 color) {
         if (m_totalQuads == BATCH_SQUARE_CAPACITY) {
           glBindBuffer(GL_ARRAY_BUFFER, m_buffer.m_vbo);
           glBufferSubData(GL_ARRAY_BUFFER, 0, m_totalQuads * sizeof(Vertex) * 4, m_vertices);
@@ -58,7 +58,7 @@ namespace cstmEngine {
         m_totalQuads++;
       }
 
-      void drawQuadT(vec2 size, vec2 pos, vec2 *texture_coords) {
+      void drawQuad(vec2 size, vec2 pos, vec2 *texture_coords) {
         if (m_totalQuads == BATCH_SQUARE_CAPACITY) {
           glBindBuffer(GL_ARRAY_BUFFER, m_buffer.m_vbo);
           glBufferSubData(GL_ARRAY_BUFFER, 0, m_totalQuads * sizeof(Vertex) * 4, m_vertices);
@@ -74,6 +74,26 @@ namespace cstmEngine {
         m_vertices[m_totalQuads * 4 + 1] = {{-x + pos.x,-y + pos.y}, {texture_coords[1]}, {1.0f, 1.0f, 1.0f}};
         m_vertices[m_totalQuads * 4 + 2] = {{ x + pos.x,-y + pos.y}, {texture_coords[2]}, {1.0f, 1.0f, 1.0f}};
         m_vertices[m_totalQuads * 4 + 3] = {{ x + pos.x, y + pos.y}, {texture_coords[3]}, {1.0f, 1.0f, 1.0f}};
+
+        m_totalQuads++;
+      }
+
+      void drawQuad(vec2 size, vec2 pos, vec2 *texture_coords, vec3 color) {
+        if (m_totalQuads == BATCH_SQUARE_CAPACITY) {
+          glBindBuffer(GL_ARRAY_BUFFER, m_buffer.m_vbo);
+          glBufferSubData(GL_ARRAY_BUFFER, 0, m_totalQuads * sizeof(Vertex) * 4, m_vertices);
+          glBindVertexArray(m_buffer.m_vao);
+          glDrawElements(GL_TRIANGLES, m_totalQuads * 6, GL_UNSIGNED_INT, 0);
+          m_totalQuads = 0;
+        }
+
+        float x = size.x / 2;
+        float y = size.y / 2;
+
+        m_vertices[m_totalQuads * 4 + 0] = {{-x + pos.x, y + pos.y}, {texture_coords[0]}, color};
+        m_vertices[m_totalQuads * 4 + 1] = {{-x + pos.x,-y + pos.y}, {texture_coords[1]}, color};
+        m_vertices[m_totalQuads * 4 + 2] = {{ x + pos.x,-y + pos.y}, {texture_coords[2]}, color};
+        m_vertices[m_totalQuads * 4 + 3] = {{ x + pos.x, y + pos.y}, {texture_coords[3]}, color};
 
         m_totalQuads++;
       }

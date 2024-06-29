@@ -23,6 +23,12 @@ namespace gameEngine {
       cstmEngine::vec2 initialPos
     );
 
+    void resetPosition(
+      cstmEngine::vec2 halfWindowSize,
+      float tileSize,
+      cstmEngine::vec2 newPos
+    );
+
     bool checkCollision(
       cstmEngine::vec2 objCoords,
       cstmEngine::vec2 objSizeFactors,

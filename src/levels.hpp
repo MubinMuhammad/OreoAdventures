@@ -11,14 +11,15 @@
 
 namespace game {
   struct PlayerLevelState {
-    uint32_t score = 0;
+    uint32_t points = 0;
     int crntLevel = 0;
     bool doorMsg = false;
   };
 
   struct Level {
     std::string m_levelRle;
-    int m_levelPoints;
+    uint16_t m_levelPoints;
+    uint32_t m_levelLength;
     uint64_t coinState = ~((uint64_t)0);
     bool levelPassed = false;
 
@@ -52,7 +53,8 @@ namespace game {
     int tileSize,
     int cloudHeight,
     uint32_t variability,
-    uint32_t seed
+    uint32_t seed,
+    uint32_t levelLength
   );
 }
 

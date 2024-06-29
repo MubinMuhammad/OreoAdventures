@@ -3,11 +3,36 @@
 #include "../gameEngine/texture.hpp"
 
 #include <cstdlib>
+#include <climits>
 #include <string>
+
+uint32_t levelGetLength(const std::string &levelRle) {
+  int out = -INT_MAX;
+
+  std::string ns = "";
+  for (int i = 0, n = 0; i < levelRle.size(); i++) {
+    if (levelRle[i] == '\n') {
+      out = std::max(n, out);
+      n = 0;
+      continue;
+    }
+
+    if (levelRle[i] >= '0' && levelRle[i] <= '9') {
+      ns.push_back(levelRle[i]);
+      continue;
+    }
+
+    n += std::stoi(ns);
+    ns = "";
+  }
+
+  return (uint32_t)out;
+}
 
 void game::Level::loadLevel(std::string levelRle, int levelPoints) {
   m_levelRle = levelRle;
   m_levelPoints = levelPoints;
+  m_levelLength = levelGetLength(levelRle);
 }
 
 void game::Level::renderLevel(
@@ -65,7 +90,7 @@ void game::Level::renderLevel(
           tileOffset = {0.5f * ((int)quadSizes[bt].x - 1), 0.5f * ((int)quadSizes[bt].y - 1)};
           break;
         case 'B':
-          bt = (game::BlockType)(SQR_BUSH1 + rand() % 3);
+          bt = (game::BlockType)(SQR_BUSH1 + rand() % 2);
           tileOffset = {0.5f, 0.0f};
           break;
         case '?':
@@ -83,16 +108,10 @@ void game::Level::renderLevel(
         case 'w':
           bt = SQR_WATER;
           break;
-        case 'S':
-          bt = SQR_SLAB;
-          break;
         case 's':
           bt = SQR_SAND;
           break;
         case '_':
-          bt = SQR_SLAB;
-          break;
-        case 'U':
           bt = SQR_SLAB;
           break;
         case 'b':
@@ -100,6 +119,9 @@ void game::Level::renderLevel(
           break;
         case 'f':
           bt = SQR_FENCE;
+          break;
+        case 'F':
+          bt = SQR_BANGLADESH_FLAG;
           break;
         default:
           bt = SQR_QUESTION_BLOCK;
@@ -125,7 +147,7 @@ void game::Level::renderLevel(
           bt == SQR_COIN
         ) {
           coinState &= ~(1 << coinIdx);
-          playerState.score += 10;
+          playerState.points += 10;
         }
 
         if (
@@ -179,7 +201,7 @@ void game::Level::renderTile(
   cstmEngine::vec2 texCoords[4];
   gameEngine::textureGetCoords(textureGrid, bt, texCoords);
 
-  batch.drawQuadT(
+  batch.drawQuad(
     {tileSize.x, tileSize.y},
     {coord.x, coord.y},
     texCoords
@@ -193,11 +215,12 @@ void game::renderCloud(
   int tileSize,
   int cloudHeight,
   uint32_t variability,
-  uint32_t seed
+  uint32_t seed,
+  uint32_t levelLength
 ) {
   srand(seed);
 
-  for (int i = -4; i <= 128; i += (rand() % 6) + 1) {
+  for (int i = -4; i <= levelLength; i += (rand() % 6) + 3) {
     int y = rand() % ((variability * 2) + (cloudHeight - variability));
 
     game::BlockType bt = (game::BlockType)(SQR_CLOUD1 + rand() % 4);
@@ -210,6 +233,6 @@ void game::renderCloud(
       quadSizes[bt].y * tileSize * 2
     };
 
-    batch.drawQuadT(cloudSize, {(float)i * tileSize, (float)y * tileSize}, texCoords);
+    batch.drawQuad(cloudSize, {(float)i * tileSize, (float)y * tileSize}, texCoords);
   }
 }

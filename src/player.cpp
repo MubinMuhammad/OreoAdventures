@@ -25,5 +25,5 @@ void game::Player::render(
     textureGrid[bt * 4 + (m_viewSide == SIDE_RIGHT ? 3 : 0)]
   };
 
-  batch.drawQuadT(m_phy.m_size, m_phy.m_pos, texCoords);
+  batch.drawQuad(m_phy.m_size, m_phy.m_pos, texCoords);
 }

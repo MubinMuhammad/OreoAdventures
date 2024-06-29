@@ -24,6 +24,7 @@
 
 // Other Includes
 #include <GLFW/glfw3.h>
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <ctime>
@@ -37,6 +38,21 @@ void windowResizeCallback(GLFWwindow *window, int w, int h) {
 
   gameWindow.m_width = w;
   gameWindow.m_height = h;
+}
+
+bool endScreen(cstmEngine::Batch &uiBatch, gameEngine::Font &font) {
+  gameWindow.beginFrame(30/255.0f, 29/255.0f, 57/255.0f, 1.0f);
+  uiBatch.beginFrame();
+
+  if (glfwGetKey(gameWindow.m_window, GLFW_KEY_Q) == GLFW_PRESS)
+    return true;
+
+  font.renderCentered(uiBatch, "game %rover", {0, 0}, 32);
+  font.renderCentered(uiBatch, "press 'q' to quit!", {0, -40}, 16);
+
+  uiBatch.endFrame();
+  gameWindow.endFrame();
+  return false;
 }
 
 int main() {
@@ -118,6 +134,8 @@ int main() {
   game::Level level3;
   level3.loadLevel(levelRle3, levelPoints3);
 
+  game::Level *crntLevel = &level1;
+
   while (gameWindow.isOpen()) {
     float half_width = (float)gameWindow.m_width / 2;
     float half_height = (float)gameWindow.m_height / 2;
@@ -127,6 +145,24 @@ int main() {
       gameTime.m_crnt = glfwGetTime();
       gameTime.m_delta = gameTime.m_crnt - gameTime.m_last;
       gameTime.m_last = gameTime.m_crnt;
+
+      if (playerState.crntLevel > 0) {
+        if (crntLevel->levelPassed) {
+          player.m_phy.resetPosition(
+            {half_width, half_height},
+            GAME_TILE_SIZE,
+            {10.0f, 200.0f}
+          );
+          playerState.points = 0;
+          if (playerState.crntLevel > 2) {
+            if (endScreen(uiBatch, uiFont)) break;
+            continue;
+          }
+        }
+
+        if (playerState.crntLevel == 1) crntLevel = &level2;
+        else if (playerState.crntLevel == 2) crntLevel = &level3;
+      }
 
       cstmEngine::vec2 playerForce;
 
@@ -161,15 +197,16 @@ int main() {
       );
 
       player.m_phy.m_velocity.x = 
-          player.m_phy.m_velocity.x > 0.0f ?
-          std::min(player.m_phy.m_velocity.x,  500.0f):
-          std::max(player.m_phy.m_velocity.x, -500.0f);
+        std::clamp(player.m_phy.m_velocity.x, -500.0f, 500.0f);
+
+      player.m_phy.m_velocity.y = 
+        std::clamp(player.m_phy.m_velocity.y, -500.0f, 500.0f);
     }
 
     // Render Scope
     {
       playerNextFrameTimer.m_crnt = glfwGetTime();
-      gameWindow.beginFrame(115/255.0f, 190/255.0f, 211/255.0f, 1.0f);
+      gameWindow.beginFrame(87/255.0f, 114/255.0f, 119/255.0f, 1.0f);
 
       glm::mat4 orthoProj = glm::ortho(
         -half_width, half_width,
@@ -190,7 +227,18 @@ int main() {
 
       view = glm::translate(
         glm::mat4(1.0f),
-        glm::vec3(std::min(0.0f, -player.m_phy.m_pos.x), 0.0f, -1.0f)
+        glm::vec3(
+          std::clamp(
+            -player.m_phy.m_pos.x,
+            -((float)crntLevel->m_levelLength * GAME_TILE_SIZE - gameWindow.m_width - GAME_TILE_SIZE),
+            0.0f
+          ),
+          std::clamp(
+            -player.m_phy.m_pos.y,
+            -10.0f * GAME_TILE_SIZE,
+            0.0f
+          ), -1.0f
+        )
       );
       glUniformMatrix4fv(
         glGetUniformLocation(gameShader.getShaderProgram(), "view"),
@@ -203,10 +251,11 @@ int main() {
         gameQuadSizes,
         GAME_TILE_SIZE,
         2, 0,
-        GAME_SEED
+        GAME_SEED,
+        crntLevel->m_levelLength
       );
 
-      level1.renderLevel(
+      crntLevel->renderLevel(
         gameBatch, player,
         playerState,
         gameAtlasGrid,
@@ -239,9 +288,9 @@ int main() {
         1, GL_FALSE, glm::value_ptr(view)
       );
 
-      std::string uiStatusLineString = "Points:" + std::to_string(playerState.score);
-      uiStatusLineString += ",Level:" + std::to_string(playerState.crntLevel + 1);
-      std::string doorWarningMsg = "You need points for next level!";
+      std::string uiStatusLineString = "%gPoints:" + std::to_string(playerState.points);
+      uiStatusLineString += "%b Level:" + std::to_string(playerState.crntLevel + 1);
+      std::string doorWarningMsg = "You need %wpoints for next level!";
 
       if (playerState.doorMsg) {
         int levelPoints = 0;
@@ -253,7 +302,7 @@ int main() {
         else if (playerState.crntLevel == 2)
           levelPoints = levelPoints3;
 
-        doorWarningMsg.insert(9, std::to_string(levelPoints) + " ");
+        doorWarningMsg.insert(9, "%r" + std::to_string(levelPoints) + " ");
         uiFont.renderCentered(uiBatch, doorWarningMsg, {0, 0}, 18);
       }
 

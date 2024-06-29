@@ -1,5 +1,4 @@
 #include "physics.hpp"
-#include <cmath>
 
 void gameEngine::Physics::update(
       float deltaTime,
@@ -33,6 +32,17 @@ void gameEngine::Physics::update(
 
   m_pos.x += m_tmpPos.x;
   m_pos.y += m_tmpPos.y;
+}
+
+void gameEngine::Physics::resetPosition(
+  cstmEngine::vec2 halfWindowSize,
+  float tileSize,
+  cstmEngine::vec2 newPos
+) {
+  m_pos.x = -halfWindowSize.x + tileSize / 2.0f + newPos.x;
+  m_pos.y = -halfWindowSize.y + tileSize / 2.0f + newPos.y;
+
+  m_tmpPos = {0.0f, 0.0f};
 }
 
 bool gameEngine::Physics::checkCollision(
