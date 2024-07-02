@@ -5,6 +5,9 @@
 #include <vector>
 
 namespace game {
+  // these are the blockTypes and have to be
+  // indexed by the one that comes first going
+  // from left to right and top to bottom.
   enum BlockType {
     SQR_CLOUD1 = 0, SQR_CLOUD2,
     SQR_CLOUD3, SQR_CLOUD4,
@@ -23,6 +26,8 @@ namespace game {
     SQR_BANGLADESH_FLAG, _SQR_EMPTY
   };
 
+  // gives us a vector v, full of texture coordinates of each 
+  // sprite in given textureAtlas.
   void textureGetCoordsIdxs(
     std::vector<cstmEngine::vec2> &v,
     std::vector<cstmEngine::vec2> &quadSize,
