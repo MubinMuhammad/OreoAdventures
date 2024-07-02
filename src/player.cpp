@@ -39,18 +39,18 @@ void game::Player::render(
     // A. mod 3 because the frameIdx can increament more than
     // 3 but we have a only 3 player textues so we limit frameIdx
     // to 0 to 2 so that we can add it to SQR_PLAYER1 to get the
-    // next frame. Hence, the name frameIdx.
-    bt = (game::BlockType)(game::SQR_PLAYER1 + (frameIdx % 3));
-    frameIdx++;
+    // next frame. Hence, the name "frameIdx".
+    m_bt = (game::BlockType)(game::SQR_PLAYER1 + (m_frameIdx % 3));
+    m_frameIdx++;
   }
 
   // read the src/texture.hpp file to understand what's happening
   // read the top section.
   cstmEngine::vec2 texCoords[4] = {
-    textureGrid[bt * 4 + (m_viewSide == SIDE_RIGHT ? 0 : 3)],
-    textureGrid[bt * 4 + (m_viewSide == SIDE_RIGHT ? 1 : 2)],
-    textureGrid[bt * 4 + (m_viewSide == SIDE_RIGHT ? 2 : 1)],
-    textureGrid[bt * 4 + (m_viewSide == SIDE_RIGHT ? 3 : 0)]
+    textureGrid[m_bt * 4 + (m_viewSide == SIDE_RIGHT ? 0 : 3)],
+    textureGrid[m_bt * 4 + (m_viewSide == SIDE_RIGHT ? 1 : 2)],
+    textureGrid[m_bt * 4 + (m_viewSide == SIDE_RIGHT ? 2 : 1)],
+    textureGrid[m_bt * 4 + (m_viewSide == SIDE_RIGHT ? 3 : 0)]
   };
 
   // adding the vertices to the batch so that
