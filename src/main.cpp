@@ -4,21 +4,22 @@
 #include "../glm/include/gtc/type_ptr.hpp"
 
 // Graphics Engine Includes
-#include "../cstmEngine/batch.hpp"
+#include "../cstmEngine/window.hpp"
 #include "../cstmEngine/shader.hpp"
 #include "../cstmEngine/texture.hpp"
-#include "../cstmEngine/window.hpp"
+#include "../cstmEngine/batch.hpp"
 
 // Game Engine Includes
-#include "../gameEngine/font.hpp"
-#include "../gameEngine/physics.hpp"
 #include "../gameEngine/time.hpp"
+#include "../gameEngine/physics.hpp"
+#include "../gameEngine/font.hpp"
 
 // Game Includes
-#include "levels.hpp"
 #include "player.hpp"
-#include "shaders.hpp"
+#include "levels.hpp"
 #include "texture.hpp"
+#include "shaders.hpp"
+#include "levels.hpp"
 
 // Other Includes
 #include <GLFW/glfw3.h>
@@ -26,22 +27,27 @@
 #include <cstddef>
 #include <cstdint>
 #include <ctime>
-#include <string>
 #include <vector>
+#include <string>
 
 // we create the gameWindow as a global variable for the
 // function below.
 cstmEngine::Window gameWindow;
 
-enum gamePlayState { GAME_MENU, GAME_PLAY, GAME_ENDSCREEN, GAME_CLOSE };
+enum gamePlayState {
+  GAME_MENU,
+  GAME_PLAY,
+  GAME_ENDSCREEN,
+  GAME_CLOSE
+};
 
 struct gameTileMap {
   std::vector<cstmEngine::vec2> maps;
   std::vector<cstmEngine::vec2> sizes;
 
   void load(const cstmEngine::TextureData &textureData) {
-    game::textureGetCoordsIdxs(
-        maps, sizes, {(float)textureData.width, (float)textureData.height}, 8);
+    game::textureGetCoordsIdxs(maps, sizes,
+                               {(float)textureData.width, (float)textureData.height}, 8);
   }
 };
 
@@ -77,105 +83,93 @@ void windowResizeCallback(GLFWwindow *window, int w, int h) {
 }
 
 void renderGame(gameState &state, cstmEngine::vec2 halfWindowSize) {
-  state.timer.update();
+    state.timer.update();
 
-  state.player.updateInput(gameWindow, state.timer, state.tileSize);
-  gameWindow.beginFrame(87 / 255.0f, 114 / 255.0f, 119 / 255.0f, 1.0f);
+    state.player.updateInput(gameWindow, state.timer, state.tileSize);
+    gameWindow.beginFrame(87/255.0f, 114/255.0f, 119/255.0f, 1.0f);
 
-  state.mainBatch.beginFrame();
-  state.mainShader.use();
-  state.textures.use(0, "gameAtlas", &state.mainShader);
+    state.mainBatch.beginFrame();
+    state.mainShader.use();
+    state.textures.use(0, "gameAtlas", &state.mainShader);
 
-  state.proj = glm::ortho(-halfWindowSize.x, halfWindowSize.x,
-                          -halfWindowSize.y, halfWindowSize.y, 0.1f, 100.0f);
+    state.proj = glm::ortho(-halfWindowSize.x, halfWindowSize.x, -halfWindowSize.y, halfWindowSize.y,
+                            0.1f, 100.0f);
 
-  glUniformMatrix4fv(
-      glGetUniformLocation(state.mainShader.getShaderProgram(), "orthoProj"), 1,
-      GL_FALSE, glm::value_ptr(state.proj));
+    glUniformMatrix4fv(glGetUniformLocation(state.mainShader.getShaderProgram(), "orthoProj"),
+                       1, GL_FALSE, glm::value_ptr(state.proj));
 
-  state.view = glm::translate(glm::mat4(1.0f),
-                              glm::vec3(
-                              std::clamp(-state.player.m_phy.m_pos.x,
-                                         -(((float)state.crntLevel.p->m_length - 1) *state.tileSize - gameWindow.m_width), 0.0f),
-                              std::clamp(-state.player.m_phy.m_pos.y, -500.0f, 0.0f), -1.0f));
+    state.view = glm::translate(glm::mat4(1.0f),
+                                glm::vec3(
+                                std::clamp(-state.player.m_phy.m_pos.x,
+                                           -(((float)state.crntLevel.p->m_length - 1) *state.tileSize - gameWindow.m_width), 0.0f),
+                                std::clamp(-state.player.m_phy.m_pos.y, -500.0f, 0.0f), -1.0f));
 
-  glUniformMatrix4fv(
-      glGetUniformLocation(state.mainShader.getShaderProgram(), "view"), 1,
-      GL_FALSE, glm::value_ptr(state.view));
+    glUniformMatrix4fv(glGetUniformLocation(state.mainShader.getShaderProgram(), "view"),
+                       1, GL_FALSE, glm::value_ptr(state.view));
 
-  game::renderCloud(state.mainBatch, state.tileMap.maps, state.tileMap.sizes,
-                    state.tileSize, 0, 4, state.seed,
-                    state.crntLevel.p->m_length);
+    game::renderCloud(state.mainBatch, state.tileMap.maps, state.tileMap.sizes, state.tileSize,
+                      0, 4, state.seed, state.crntLevel.p->m_length);
 
-  state.crntLevel.p->renderLevel(
-      state.mainBatch, state.player, state.tileMap.maps, state.tileMap.sizes,
-      state.tileSize, {(float)gameWindow.m_width, (float)gameWindow.m_height},
-      state.seed);
+    state.crntLevel.p->renderLevel(state.mainBatch, state.player, state.tileMap.maps,
+                                   state.tileMap.sizes, state.tileSize,
+                                   {(float)gameWindow.m_width, (float)gameWindow.m_height}, state.seed);
 
-  state.player.render(state.mainBatch, state.tileMap.maps);
-  state.mainBatch.endFrame();
+    state.player.render(state.mainBatch, state.tileMap.maps);
+    state.mainBatch.endFrame();
 
-  state.uiBatch.beginFrame();
-  state.uiShader.use();
-  state.textures.use(1, "fontAtlas", &state.uiShader);
+    state.uiBatch.beginFrame();
+    state.uiShader.use();
+    state.textures.use(1, "fontAtlas", &state.uiShader);
 
-  glUniformMatrix4fv(
-      glGetUniformLocation(state.uiShader.getShaderProgram(), "orthoProj"), 1,
-      GL_FALSE, glm::value_ptr(state.proj));
+    glUniformMatrix4fv(glGetUniformLocation(state.uiShader.getShaderProgram(), "orthoProj"),
+                       1, GL_FALSE, glm::value_ptr(state.proj));
 
-  state.view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+    state.view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 
-  glUniformMatrix4fv(
-      glGetUniformLocation(state.uiShader.getShaderProgram(), "view"), 1,
-      GL_FALSE, glm::value_ptr(state.view));
+    glUniformMatrix4fv(glGetUniformLocation(state.uiShader.getShaderProgram(), "view"),
+                       1, GL_FALSE, glm::value_ptr(state.view));
 
-  std::string uiStatusLineString =
-      "%gPoints:" + std::to_string(state.player.levelState.m_points);
-  uiStatusLineString +=
-      "%b Level:" + std::to_string(state.player.levelState.m_crntLevel + 1);
-  std::string doorWarningMsg = "You need %apoints for next level!";
+    std::string uiStatusLineString = "%gPoints:" + std::to_string(state.player.levelState.m_points);
+    uiStatusLineString += "%b Level:" + std::to_string(state.player.levelState.m_crntLevel + 1);
+    std::string doorWarningMsg = "You need %apoints for next level!";
 
-  if (state.player.levelState.m_doorMsg == true) {
-    doorWarningMsg.insert(
-        9, "%r" + std::to_string(state.crntLevel.p->m_points) + " ");
-    state.font.renderCentered(state.uiBatch, doorWarningMsg, {0, 0}, 20);
-  }
-
-  if (state.crntLevel.p->m_passed) {
-    if (state.crntLevel.idx == state.levels.size() - 1) {
-      state.playState = GAME_ENDSCREEN;
-      return;
+    if (state.player.levelState.m_doorMsg == true) {
+      doorWarningMsg.insert(9, "%r" + std::to_string(state.crntLevel.p->m_points) + " ");
+      state.font.renderCentered(state.uiBatch, doorWarningMsg, {0, 0}, 20);
     }
 
-    state.player.levelState.m_points = 0;
-    state.player.m_phy.resetPosition(halfWindowSize, state.tileSize, {20, 200});
-    state.crntLevel.idx++;
-    state.crntLevel.p = &state.levels[state.crntLevel.idx];
-  }
+    if (state.crntLevel.p->m_passed) {
+      if (state.crntLevel.idx == state.levels.size() - 1) {
+        state.playState = GAME_ENDSCREEN;
+        return;
+      }
 
-  state.font.render(state.uiBatch, uiStatusLineString,
-                    {-halfWindowSize.x + 9 + 10, halfWindowSize.y - 9 - 10},
-                    20);
-  state.uiBatch.endFrame();
-  gameWindow.endFrame();
+      state.player.levelState.m_points = 0;
+      state.player.m_phy.resetPosition(halfWindowSize, state.tileSize, {20, 200});
+      state.crntLevel.idx++;
+      state.crntLevel.p = &state.levels[state.crntLevel.idx];
+    }
+
+    state.font.render(state.uiBatch, uiStatusLineString,
+                      {-halfWindowSize.x + 9 + 10, halfWindowSize.y - 9 - 10}, 20);
+    state.uiBatch.endFrame();
+    gameWindow.endFrame();
 }
 
 void renderEndScreen(gameState &state, cstmEngine::vec2 halfWindowSize) {
-  gameWindow.beginFrame(30 / 255.0f, 29 / 255.0f, 57 / 255.0f, 1.0f);
+  gameWindow.beginFrame(30/255.0f, 29/255.0f, 57/255.0f, 1.0f);
   state.uiBatch.beginFrame();
 
-  state.proj = glm::ortho(-halfWindowSize.x, halfWindowSize.x,
-                          -halfWindowSize.y, halfWindowSize.y, 0.1f, 100.0f);
+  state.proj = glm::ortho(-halfWindowSize.x, halfWindowSize.x, -halfWindowSize.y, halfWindowSize.y,
+                          0.1f, 100.0f);
 
-  glUniformMatrix4fv(
-      glGetUniformLocation(state.mainShader.getShaderProgram(), "orthoProj"), 1,
-      GL_FALSE, glm::value_ptr(state.proj));
+  glUniformMatrix4fv(glGetUniformLocation(state.mainShader.getShaderProgram(), "orthoProj"),
+                     1, GL_FALSE, glm::value_ptr(state.proj));
 
   state.view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 
-  glUniformMatrix4fv(
-      glGetUniformLocation(state.uiShader.getShaderProgram(), "view"), 1,
-      GL_FALSE, glm::value_ptr(state.view));
+  glUniformMatrix4fv(glGetUniformLocation(state.uiShader.getShaderProgram(), "view"),
+                     1, GL_FALSE, glm::value_ptr(state.view));
 
   if (glfwGetKey(gameWindow.m_window, GLFW_KEY_Q) == GLFW_PRESS) {
     state.playState = GAME_CLOSE;
@@ -183,8 +177,7 @@ void renderEndScreen(gameState &state, cstmEngine::vec2 halfWindowSize) {
   }
 
   state.font.renderCentered(state.uiBatch, "%wgame %rover", {0, 20}, 32);
-  state.font.renderCentered(state.uiBatch, "%wpress 'q' to quit!", {0, -20},
-                            16);
+  state.font.renderCentered(state.uiBatch, "%wpress 'q' to quit!", {0, -20}, 16);
 
   state.uiBatch.endFrame();
   gameWindow.endFrame();
@@ -200,14 +193,12 @@ int main() {
 
   stbi_set_flip_vertically_on_load(true);
   cstmEngine::TextureData gameTextureData;
-  gameTextureData.data =
-      stbi_load("./assets/gamePixelArt.png", &gameTextureData.width,
-                &gameTextureData.height, &gameTextureData.color_channels, 0);
+  gameTextureData.data = stbi_load("./assets/gamePixelArt.png", &gameTextureData.width,
+                                   &gameTextureData.height, &gameTextureData.color_channels, 0);
 
   state.textures.create(gameTextureData);
   state.tileMap.load(gameTextureData);
-  state.font.create(
-      {(float)gameTextureData.width, (float)gameTextureData.height});
+  state.font.create({(float)gameTextureData.width, (float)gameTextureData.height});
 
   state.mainBatch.create();
   state.uiBatch.create();
@@ -222,15 +213,17 @@ int main() {
   state.crntLevel.p = &state.levels[state.crntLevel.idx];
 
   while (gameWindow.isOpen()) {
-    cstmEngine::vec2 halfWindowSize = {(float)gameWindow.m_width / 2,
-                                       (float)gameWindow.m_height / 2};
+    cstmEngine::vec2 halfWindowSize = {
+      (float)gameWindow.m_width / 2,
+      (float)gameWindow.m_height / 2
+    };
 
     if (state.playState == GAME_PLAY)
       renderGame(state, halfWindowSize);
     else if (state.playState == GAME_ENDSCREEN)
       renderEndScreen(state, halfWindowSize);
     else if (state.playState == GAME_CLOSE)
-      break;
+        break;
   }
 
   state.mainBatch.destroy();
