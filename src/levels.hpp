@@ -15,12 +15,6 @@ namespace game {
   // - how many points the player has.
   // - what level player is in.
   // - should the door msg be shown when he comes to the door
-  struct PlayerLevelState {
-    uint32_t m_points = 0;
-    int m_crntLevel = 0;
-    bool m_doorMsg = false;
-  };
-
   struct Level {
     // containing a copy of the level RLE
     std::string m_rle;
@@ -42,18 +36,13 @@ namespace game {
     // next level and false otherwise.
     bool m_passed = false;
 
-    // loadLevel() just sets the taken rle and points
-    // and sets it to the struct's level and points.
-    // It also calculates the length of the level.
-    void loadLevel(std::string levelRle, int levelPoints);
 
     // renderLevel draws the level with the RIE
     // it maps the correct tiles and checks player
     // conditions.
     void renderLevel(
       cstmEngine::Batch &batch,
-      game::Player player,
-      PlayerLevelState &playerState,
+      game::Player &player,
       std::vector<cstmEngine::vec2> &textureGrid,
       std::vector<cstmEngine::vec2> &quadSizes,
       int tileSize,
@@ -73,6 +62,8 @@ namespace game {
         game::BlockType bt
       );
   };
+
+  std::vector<Level> levelRead(std::vector<std::string> levelPaths);
 
   // render cloud renders clouds with a given
   // height and variablilty, the game seed is

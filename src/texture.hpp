@@ -9,24 +9,25 @@ namespace game {
   // indexed by the one that comes first going
   // from left to right and top to bottom.
   enum BlockType {
-    SQR_CLOUD1 = 0, SQR_CLOUD2,
-    SQR_CLOUD3, SQR_CLOUD4,
-    SQR_COIN, SQR_GRASS,
-    SQR_DIRT, SQR_HEART1,
-    SQR_HEART2, SQR_HEART3,
-    SQR_QUESTION_BLOCK, SQR_FENCE,
-    SQR_WOODPILE, SQR_CACTUS,
-    SQR_SAND, SQR_DOOR,
-    SQR_SLAB, SQR_BUSH1,
-    SQR_BUSH2, SQR_WATER,
-    SQR_BRICK, SQR_PLAYER1,
-    SQR_PLAYER2, SQR_PLAYER3,
-    SQR_NITROGEN_BOX, SQR_BOX,
-    SQR_TREE1, SQR_TREE2, SQR_TREE3,
-    SQR_BANGLADESH_FLAG, _SQR_EMPTY
+    TILE_CLOUD1 = 0, TILE_CLOUD2,
+    TILE_CLOUD3, TILE_CLOUD4,
+    TILE_GRASS, TILE_GRASS_SIDE,
+    TILE_DIRT,TILE_BUSH1, TILE_BUSH2,
+    TILE_CACTUS, TILE_SAND,
+    TILE_WATER, TILE_WATER_TOP,
+    TILE_BRICK, TILE_NITROGEN_BOX,
+    TILE_BOX, TILE_QUESTION_BLOCK,
+    TILE_FENCE, TILE_GRASS_TOP1,
+    TILE_GRASS_TOP2, TILE_SLAB,
+    TILE_COIN, TILE_WOODPILE,
+    TILE_BOAT, TILE_PLAYER1,
+    TILE_PLAYER2, TILE_PLAYER3,
+    TILE_SUN, TILE_TREE1, TILE_TREE2,
+    TILE_TREE3, TILE_TREE4, TILE_DOOR,
+    _TILE_EMPTY
   };
 
-  // gives us a vector v, full of texture coordinates of each 
+  // gives us a vector v, full of texture coordinates of each
   // sprite in given textureAtlas.
   void textureGetCoordsIdxs(
     std::vector<cstmEngine::vec2> &v,

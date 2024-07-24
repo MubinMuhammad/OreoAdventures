@@ -10,9 +10,9 @@
 |                                                                               CGdddd  dd
 |                                                   T C                         Gddddd  dd
 |                                 C              GGGGGG                        Gdddddd  dd
-|                                 _    CCC  ___    dddd                      CGddddddd  dd
-|                          C           ___                                   Gdddddddd  dd
-|                          _                 C                              Gddddddddd  dd
-|                                            W      GGGGGGGG         C     Gdddddddddd  dd
+|                                 _    CCC         dddd                      CGddddddd  dd
+|                          C           ___   C                               Gdddddddd  dd
+|                          _                 W                              Gddddddddd  dd
+|                                           WWW     GGGGGGGG         C     Gdddddddddd  dd
 |GGGGGGGG    T                         GGGGGGGGGGGGGddddddddG             Gddddddddddd  dd
 |ddddddddGGGGGGGGGGG     GGGGGGGGGGGGGGddddddddddddddddddddddGGGGGG      Gdddddddddddd  dd

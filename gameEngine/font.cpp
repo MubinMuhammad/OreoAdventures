@@ -1,5 +1,6 @@
 #include "font.hpp"
 #include "texture.hpp"
+#include <cstdio>
 
 static std::string charMap =
 "ABCDEFGHIJKLMNOP\n"
@@ -8,20 +9,20 @@ static std::string charMap =
 "+=[]{}|;:'\"<>?/,";
 
 static constexpr cstmEngine::vec3 fontColors[] = {
+  { 21 / 255.0f,  29 / 255.0f,  40 / 255.0f}, // black
   {199 / 255.0f, 207 / 255.0f, 204 / 255.0f}, // white
-  {165 / 255.0f,  48 / 255.0f,  48 / 255.0f}, // red
-  {117 / 255.0f, 167 / 255.0f,  67 / 255.0f}, // green
-  { 79 / 255.0f, 143 / 255.0f, 186 / 255.0f}, // blue
-  {222 / 255.0f, 158 / 255.0f,  65 / 255.0f}, // yellow
+  {207 / 255.0f,  87 / 255.0f,  60 / 255.0f}, // red
+  {208 / 255.0f, 218 / 255.0f, 145 / 255.0f}, // green
+  {115 / 255.0f, 190 / 255.0f, 211 / 255.0f}, // blue
+  {232 / 255.0f, 193 / 255.0f, 112 / 255.0f}, // yellow
   {218 / 255.0f, 134 / 255.0f,  62 / 255.0f}, // orange
   {164 / 255.0f, 221 / 255.0f, 219 / 255.0f}, // cyan
-  {198 / 255.0f,  81 / 255.0f, 151 / 255.0f}  // pink
+  {223 / 255.0f, 132 / 255.0f, 165 / 255.0f}  // pink
 };
 
 static void charToUpper(char &c) {
-  if (c >= 'a' && c <= 'z') {
+  if (c >= 'a' && c <= 'z')
     c -= 'a' - 'A';
-  }
 }
 
 static void getCharIdx(char c, uint32_t &outIdx) {
@@ -44,7 +45,7 @@ static int getColorStrSize(std::string s) {
       char c = s[i + 1];
 
       if (
-        c == 'w' || c == 'r' || c == 'g' || c == 'b' ||
+        c == 'a' || c == 'w' || c == 'r' || c == 'g' || c == 'b' ||
         c == 'y' || c == 'o' || c == 'c' || c == 'p'
       ) i += 2;
     }
@@ -90,26 +91,17 @@ void gameEngine::Font::render(
 
     if (i != str.size() - 1 && str[i] == '%') {
       switch (str[i + 1]) {
-        case 'w':
-          color = fontColors[0]; break;
-        case 'r':
-          color = fontColors[1]; break;
-        case 'g':
-          color = fontColors[2]; break;
-        case 'b':
-          color = fontColors[3]; break;
-        case 'y':
-          color = fontColors[4]; break;
-        case 'o':
-          color = fontColors[5]; break;
-        case 'c':
-          color = fontColors[6]; break;
-        case 'p':
-          color = fontColors[7]; break;
-        default:
-          i -= 2; break;
+        case 'a': color = fontColors[0]; i++; continue;
+        case 'w': color = fontColors[1]; i++; continue;
+        case 'r': color = fontColors[2]; i++; continue;
+        case 'g': color = fontColors[3]; i++; continue;
+        case 'b': color = fontColors[4]; i++; continue;
+        case 'y': color = fontColors[5]; i++; continue;
+        case 'o': color = fontColors[6]; i++; continue;
+        case 'c': color = fontColors[7]; i++; continue;
+        case 'p': color = fontColors[8]; i++; continue;
+        default: break;
       }
-      i += 2;
     }
 
     uint32_t k;
@@ -137,48 +129,7 @@ void gameEngine::Font::renderCentered(
 
   int halfTextLength = (getColorStrSize(str) * fontSize) / 2;
   textPos.x -= halfTextLength;
+  textPos.y -= (float)fontSize / 2;
 
-  for (int i = 0; i < str.size(); i++) {
-    if (str[i] == ' ') {
-      textPos.x += fontSize;
-      continue;
-    }
-
-    if (i != str.size() - 1 && str[i] == '%') {
-      switch (str[i + 1]) {
-        case 'w':
-          color = fontColors[0]; break;
-        case 'r':
-          color = fontColors[1]; break;
-        case 'g':
-          color = fontColors[2]; break;
-        case 'b':
-          color = fontColors[3]; break;
-        case 'y':
-          color = fontColors[4]; break;
-        case 'o':
-          color = fontColors[5]; break;
-        case 'c':
-          color = fontColors[6]; break;
-        case 'p':
-          color = fontColors[7]; break;
-        default:
-          i -= 2; break;
-      }
-      i += 2;
-    }
-
-    uint32_t k;
-    getCharIdx(str[i], k);
-
-    cstmEngine::vec2 charTexCoords[4];
-    gameEngine::textureGetCoords(fontAtlasCoords, k, charTexCoords);
-
-    batch.drawQuad(
-      {(float)fontSize, (float)fontSize},
-      textPos, charTexCoords, color
-    );
-
-    textPos.x += fontSize;
-  }
+  Font::render(batch, str, textPos, fontSize);
 }

@@ -1,4 +1,4 @@
-G -> grass/dirt
+G -> grass
 d -> dirt
 T -> tree
 B -> bush

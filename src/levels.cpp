@@ -2,9 +2,14 @@
 #include "texture.hpp"
 #include "../gameEngine/texture.hpp"
 
+#include <GLFW/glfw3.h>
+#include <cmath>
+
 #include <cstdlib>
 #include <climits>
 #include <string>
+#include <vector>
+#include <fstream>
 
 // this function is used to get the
 // level length.
@@ -39,7 +44,7 @@
 // to RLE that row. and puts a section for that.
 //
 // To see how, understand the `src/rle.cpp` file.
-uint32_t levelGetLength(const std::string &levelRle) {
+static uint32_t levelGetLength(const std::string &levelRle) {
   // the out will contain the result which is the
   // length of the level.
   int out = -INT_MAX;
@@ -102,19 +107,61 @@ uint32_t levelGetLength(const std::string &levelRle) {
   return (uint32_t)out;
 }
 
-// load level function does what it says
-// and I think it doesn't need more explanation.
-void game::Level::loadLevel(std::string levelRle, int levelPoints) {
-  m_rle = levelRle;
-  m_points = levelPoints;
-  m_length = levelGetLength(levelRle);
+static std::string getRle(const std::string &raw) {
+  if (raw.empty()) return "";
+
+  int count = 1;
+  char crntChar = raw[0];
+  std::string rle = "";
+
+  for (int i = 1; i < raw.size(); i++) {
+    if (raw[i] != crntChar) {
+      rle.append(std::to_string(count) + crntChar);
+      count = 1;
+      crntChar = raw[i];
+      continue;
+    }
+
+    count++;
+  }
+
+  rle.append(std::to_string(count) + crntChar);
+
+  return rle;
+}
+
+std::vector<game::Level> game::levelRead(std::vector<std::string> levelPaths) {
+  std::vector<game::Level> levels(levelPaths.size());
+  int crntLevelIdx = 0;
+
+  for (std::string crntLevelPath : levelPaths) {
+    std::ifstream crntLevelMap(crntLevelPath);
+
+    if (!crntLevelMap.is_open()) continue;
+
+    std::string line = "";
+    std::getline(crntLevelMap, line);
+
+    levels[crntLevelIdx].m_points = std::stoi(line);
+
+    while (std::getline(crntLevelMap, line)) {
+      if (line.empty()) continue;
+      std::string crntRowRle = getRle(line);
+      crntRowRle.push_back('\n');
+      levels[crntLevelIdx].m_rle.insert(0, crntRowRle);
+    }
+
+    levels[crntLevelIdx].m_length = levelGetLength(levels[crntLevelIdx].m_rle);
+    crntLevelIdx++;
+  }
+
+  return levels;
 }
 
 // renders the level in the game.
 void game::Level::renderLevel(
   cstmEngine::Batch &batch,
-  game::Player player,
-  PlayerLevelState &playerState,
+  game::Player &player,
   std::vector<cstmEngine::vec2> &textureGrid,
   std::vector<cstmEngine::vec2> &quadSizes,
   int tileSize,
@@ -159,7 +206,7 @@ void game::Level::renderLevel(
   // be true and the player will be texted with
   // the warining about the not having enough
   // coins.
-  playerState.m_doorMsg = false;
+  player.levelState.m_doorMsg = false;
 
   // here is a for each loop to go through is character
   // of the RLE string.
@@ -204,21 +251,22 @@ void game::Level::renderLevel(
         // if the character is a 'G' we say that the block type
         // is a grass. Others are self-explanitory
         case 'G':
-          bt = SQR_GRASS;
+          bt = TILE_GRASS;
           break;
         case 'd':
-          bt = SQR_DIRT;
+          bt = TILE_DIRT;
           break;
         case 'T':
           // if we find a tree though, we need to select a random three
           // from the three trees we have here we do use the rand() function
           // to generate a random number. Because the random number might be
           // greater than the number of trees we have we do a mod on it to
-          // make it in range of 0 and 2. Now add it to SQR_TREE1 as it's
+          // make it in range of 0 and 2. Now add it to TILE_TREE1 as it's
           // an enum and enum is just a value and if you take look at
-          // src/texture.hpp you will see SQR_TREE1, SQR_TREE2 and SQR_TREE3
-          // are one after another, therefore the enum value increase by one.
-          bt = (game::BlockType)(SQR_TREE1 + rand() % 3);
+          // src/texture.hpp you will see TILE_TREE1, TILE_TREE2, TILE_TREE3
+          // and TILE_TREE4 are one after another, therefore the enum value
+          // increase by one.
+          bt = (game::BlockType)(TILE_TREE1 + rand() % 4);
           // we deal the with x coordinate of the tile as if we don't
           // we will see the position gets half of it way to x coordinate.
           // So, I thought of this solution (Try to think by yourself).
@@ -226,42 +274,43 @@ void game::Level::renderLevel(
           break;
         case 'B':
           // same thing we did with tree but now with bushes.
-          bt = (game::BlockType)(SQR_BUSH1 + rand() % 2);
+          bt = (game::BlockType)(TILE_BUSH1 + rand() % 2);
           // fixing tile issue.
           tileOffset = {0.5f, 0.0f};
           break;
         case '?':
-          bt = SQR_QUESTION_BLOCK;
+          bt = TILE_QUESTION_BLOCK;
           break;
         case 'C':
-          bt = SQR_COIN;
+          bt = TILE_COIN;
           break;
         case 'D':
-          bt = SQR_DOOR;
+          bt = TILE_DOOR;
+          tileOffset = {0.5f * ((int)quadSizes[bt].x - 1), 0.5f * ((int)quadSizes[bt].y - 1)};
           break;
         case 'W':
-          bt = SQR_WOODPILE;
+          bt = TILE_WOODPILE;
           break;
         case 'w':
-          bt = SQR_WATER;
+          bt = TILE_WATER;
           break;
         case 's':
-          bt = SQR_SAND;
+          bt = TILE_SAND;
           break;
         case '_':
-          bt = SQR_SLAB;
+          bt = TILE_SLAB;
           break;
         case 'b':
-          bt = SQR_BOX;
+          bt = TILE_BOX;
           break;
         case 'f':
-          bt = SQR_FENCE;
+          bt = TILE_FENCE;
           break;
-        case 'F':
-          bt = SQR_BANGLADESH_FLAG;
+        case 'a':
+          bt = TILE_BRICK;
           break;
         default:
-          bt = SQR_QUESTION_BLOCK;
+          bt = TILE_QUESTION_BLOCK;
           break;
       }
 
@@ -272,12 +321,13 @@ void game::Level::renderLevel(
         // and the at coinIdx-th bit is 0
         // we know that player has taken the
         // coin already. So, we set the block
-        // type to _SQR_EMPTY which will not
+        // type to _TILE_EMPTY which will not
         // be rendered as any texture.
-        if (bt == SQR_COIN) {
+        if (bt == TILE_COIN) {
           if (!(m_coinState & (1 << coinIdx))) {
-            bt = _SQR_EMPTY;
+            bt = _TILE_EMPTY;
           }
+          tileOffset.y = fabs(sin(fmod(glfwGetTime(),  10)));
         }
 
         // if a collision did happend with the player
@@ -289,13 +339,13 @@ void game::Level::renderLevel(
             {quadSizes[bt].x, quadSizes[bt].y},
             tileSize
           ) && 
-          bt == SQR_COIN
+          bt == TILE_COIN
         ) {
           // we set the coinIdx-th bit to 0.
           m_coinState &= ~(1 << coinIdx);
           // we also add a point so the player can
           // can see he is getting something.
-          playerState.m_points += 10;
+          player.levelState.m_points += 10;
         }
 
         // if a collision did happend with the player
@@ -307,7 +357,7 @@ void game::Level::renderLevel(
             {quadSizes[bt].x, quadSizes[bt].y},
             tileSize
           ) && 
-          bt == SQR_DOOR
+          bt == TILE_DOOR
         ) {
           // __builtin_popcountll returns how many bits are on
           // in a 64bit unsigned integer. By doing a (64 - that) we now
@@ -317,15 +367,15 @@ void game::Level::renderLevel(
           // 
           // if so, print the doorMsg otherwise set m_passed to true.
           if (m_points > ((64 - __builtin_popcountll(m_coinState)) * 10))
-            playerState.m_doorMsg = true;
+            player.levelState.m_doorMsg = true;
           else if (m_passed == false) {
-            playerState.m_crntLevel++;
+            player.levelState.m_crntLevel++;
             m_passed = true;
           }
         }
 
-        // now, if the bt is not _SQR_EMPTY we shall render that tile!
-        if (bt != _SQR_EMPTY) {
+        // now, if the bt is not _TILE_EMPTY we shall render that tile!
+        if (bt != _TILE_EMPTY) {
           renderTile(
             batch,
             textureGrid,
@@ -341,9 +391,9 @@ void game::Level::renderLevel(
         // this is just because in the next iteration we
         // have to still go through and if bt
         // is a coin and check coinIdx-th bit is on or off.
-        if (bt == _SQR_EMPTY) bt = btCpy;
+        if (bt == _TILE_EMPTY) bt = btCpy;
         // increase the coinIdx if it is a coin.
-        if (bt == SQR_COIN) coinIdx++;
+        if (bt == TILE_COIN) coinIdx++;
       }
 
       // set tile offset to 0 each time,
@@ -403,18 +453,18 @@ void game::renderCloud(
   // in the positions and type of the clouds.
   srand(seed);
 
-  for (int i = -4; i <= levelLength; i += (rand() % 6) + 10) {
+  for (int i = 0; i <= levelLength; i += 5) {
     // this is a simple equation to generate random heights
     // for the clouds. The rand() will generate the random
     // numbers between 0 and RAND_MAX. but for our porposes
     // we will mod it by variability to get random numbers
     // between 0 and varibility - 1. Then to add the height
     // to it we add cloudHeight / 2 to it.
-    int y = (rand() % variability) - (cloudHeight / 2);
+    int y = ((rand() % variability) + cloudHeight);
 
     // the block type is got in the same way the trees get
     // the random generation.
-    game::BlockType bt = (game::BlockType)(SQR_CLOUD1 + rand() % 4);
+    game::BlockType bt = (game::BlockType)(TILE_CLOUD1 + rand() % 4);
 
     // this is same as we have done in renderTile.
     cstmEngine::vec2 texCoords[4];
@@ -424,8 +474,8 @@ void game::renderCloud(
     // there factors with tileSize and then doubling the size
     // to make it larger compared to everything else.
     cstmEngine::vec2 cloudSize = {
-      quadSizes[bt].x * tileSize * 2,
-      quadSizes[bt].y * tileSize * 2
+      quadSizes[bt].x * tileSize,
+      quadSizes[bt].y * tileSize
     };
 
     // this just generates required vertices to render a
