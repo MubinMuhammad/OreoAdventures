@@ -371,12 +371,8 @@ void game::Level::renderLevel(
           // the points needed to get him to the next level.
           // 
           // if so, print the doorMsg otherwise set m_passed to true.
-          if (m_points > ((64 - __builtin_popcountll(m_coinState)) * 10))
-            player.levelState.m_doorMsg = true;
-          else if (m_passed == false) {
-            player.levelState.m_crntLevel++;
-            m_passed = true;
-          }
+          if (m_points > ((64 - __builtin_popcountll(m_coinState)) * 10)) player.levelState.m_doorMsg = true;
+          else if (player.levelState.m_passed == false) player.levelState.m_passed = true;
         }
 
         if (

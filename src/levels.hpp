@@ -33,10 +33,6 @@ namespace game {
     // rendering it anymore. Otherwise, we should render
     // and wait for the player to take it.
     uint64_t m_coinState = ~((uint64_t)0);
-    // the will be true if the player should go to the
-    // next level and false otherwise.
-    bool m_passed = false;
-
 
     // renderLevel draws the level with the RIE
     // it maps the correct tiles and checks player

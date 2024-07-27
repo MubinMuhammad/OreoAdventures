@@ -124,7 +124,7 @@ void renderGame(gameState &state, cstmEngine::vec2 halfWindowSize) {
                        1, GL_FALSE, glm::value_ptr(state.view));
 
     std::string uiStatusLineString = "%gPoints:" + std::to_string(state.player.levelState.m_points);
-    uiStatusLineString += "%b Level:" + std::to_string(state.player.levelState.m_crntLevel + 1);
+    uiStatusLineString += "%b Level:" + std::to_string(state.crntLevel.idx + 1);
     std::string doorWarningMsg = "You need %apoints for next level!";
 
     if (state.player.levelState.m_doorMsg == true) {
@@ -132,9 +132,10 @@ void renderGame(gameState &state, cstmEngine::vec2 halfWindowSize) {
       state.font.renderCentered(state.uiBatch, doorWarningMsg, {0, 0}, 20);
     }
 
-    if (state.crntLevel.p->m_passed) {
-      if (state.crntLevel.idx == state.levels.size() - 1)
-        state.playState = GAME_ENDSCREEN;
+    if (state.player.levelState.m_passed) {
+      state.player.levelState.m_passed = false;
+
+      if (state.crntLevel.idx == state.levels.size() - 1) state.playState = GAME_ENDSCREEN;
 
       state.player.levelState.m_points = 0;
       state.player.m_phy.resetPosition(halfWindowSize, state.tileSize, {20, 200});
@@ -163,14 +164,19 @@ void renderEndScreen(gameState &state, cstmEngine::vec2 halfWindowSize) {
   glUniformMatrix4fv(glGetUniformLocation(state.uiShader.getShaderProgram(), "view"),
                      1, GL_FALSE, glm::value_ptr(state.view));
 
-  if (glfwGetKey(gameWindow.m_window, GLFW_KEY_Q) == GLFW_PRESS)
-    state.playState = GAME_CLOSE;
+  if (glfwGetKey(gameWindow.m_window, GLFW_KEY_Q) == GLFW_PRESS) state.playState = GAME_CLOSE;
 
   if (glfwGetKey(gameWindow.m_window, GLFW_KEY_R) == GLFW_PRESS) {
-    state.crntLevel.p = &state.levels[0];
+    state.player.m_phy.resetPosition(halfWindowSize, state.tileSize, {20, 200});
     state.player.levelState.m_points = 0;
     state.player.m_viewSide = game::SIDE_RIGHT;
-    state.player.m_phy.resetPosition(halfWindowSize, state.tileSize, {20, 200});
+
+    for (int i = 0; i <= state.crntLevel.idx; i++) {
+      state.levels[i].m_coinState = ~((uint64_t)0);
+    }
+
+    state.crntLevel.idx = 0;
+    state.crntLevel.p = &state.levels[state.crntLevel.idx];
     state.playState = GAME_PLAY;
   }
 

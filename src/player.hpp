@@ -20,8 +20,8 @@ namespace game {
 
   struct PlayerLevelState {
     uint32_t m_points = 0;
-    int m_crntLevel = 0;
     bool m_doorMsg = false;
+    bool m_passed = false;
   };
 
   struct Player {
