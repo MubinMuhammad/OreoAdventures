@@ -1,4 +1,5 @@
 #include "levels.hpp"
+#include "playState.hpp"
 #include "texture.hpp"
 #include "../gameEngine/texture.hpp"
 
@@ -159,9 +160,10 @@ std::vector<game::Level> game::levelRead(std::vector<std::string> levelPaths) {
 }
 
 // renders the level in the game.
+
 void game::Level::renderLevel(
   cstmEngine::Batch &batch,
-  game::Player &player,
+  game::Player &player, gamePlayState &playState,
   std::vector<cstmEngine::vec2> &textureGrid,
   std::vector<cstmEngine::vec2> &quadSizes,
   int tileSize,
@@ -306,6 +308,9 @@ void game::Level::renderLevel(
         case 'f':
           bt = TILE_FENCE;
           break;
+        case 'N':
+          bt = TILE_NITROGEN_BOX;
+          break;
         case 'a':
           bt = TILE_BRICK;
           break;
@@ -327,7 +332,7 @@ void game::Level::renderLevel(
           if (!(m_coinState & (1 << coinIdx))) {
             bt = _TILE_EMPTY;
           }
-          tileOffset.y = fabs(sin(fmod(glfwGetTime(),  10)));
+          tileOffset.y = fabs(sin(glfwGetTime()));
         }
 
         // if a collision did happend with the player
@@ -372,6 +377,18 @@ void game::Level::renderLevel(
             player.levelState.m_crntLevel++;
             m_passed = true;
           }
+        }
+
+        if (
+          player.m_phy.checkCollision(
+            {tilePos.x + (tileOffset.x * tileSize),
+             tilePos.y + (tileOffset.y * tileSize)},
+            {quadSizes[bt].x, quadSizes[bt].y},
+            tileSize
+          ) && 
+          bt == TILE_NITROGEN_BOX
+        ) {
+          playState = GAME_ENDSCREEN;
         }
 
         // now, if the bt is not _TILE_EMPTY we shall render that tile!

@@ -43,6 +43,8 @@ void gameEngine::Physics::resetPosition(
   m_pos.y = -halfWindowSize.y + tileSize / 2.0f + newPos.y;
 
   m_tmpPos = {0.0f, 0.0f};
+  m_velocity = {0.0f, 0.0f};
+  m_accel = {0.0f, 0.0f};
 }
 
 bool gameEngine::Physics::checkCollision(

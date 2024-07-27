@@ -20,6 +20,7 @@
 #include "texture.hpp"
 #include "shaders.hpp"
 #include "levels.hpp"
+#include "playState.hpp"
 
 // Other Includes
 #include <GLFW/glfw3.h>
@@ -33,13 +34,6 @@
 // we create the gameWindow as a global variable for the
 // function below.
 cstmEngine::Window gameWindow;
-
-enum gamePlayState {
-  GAME_MENU,
-  GAME_PLAY,
-  GAME_ENDSCREEN,
-  GAME_CLOSE
-};
 
 struct gameTileMap {
   std::vector<cstmEngine::vec2> maps;
@@ -110,8 +104,8 @@ void renderGame(gameState &state, cstmEngine::vec2 halfWindowSize) {
     game::renderCloud(state.mainBatch, state.tileMap.maps, state.tileMap.sizes, state.tileSize,
                       0, 4, state.seed, state.crntLevel.p->m_length);
 
-    state.crntLevel.p->renderLevel(state.mainBatch, state.player, state.tileMap.maps,
-                                   state.tileMap.sizes, state.tileSize,
+    state.crntLevel.p->renderLevel(state.mainBatch, state.player, state.playState,
+                                   state.tileMap.maps, state.tileMap.sizes, state.tileSize,
                                    {(float)gameWindow.m_width, (float)gameWindow.m_height}, state.seed);
 
     state.player.render(state.mainBatch, state.tileMap.maps);
@@ -139,10 +133,8 @@ void renderGame(gameState &state, cstmEngine::vec2 halfWindowSize) {
     }
 
     if (state.crntLevel.p->m_passed) {
-      if (state.crntLevel.idx == state.levels.size() - 1) {
+      if (state.crntLevel.idx == state.levels.size() - 1)
         state.playState = GAME_ENDSCREEN;
-        return;
-      }
 
       state.player.levelState.m_points = 0;
       state.player.m_phy.resetPosition(halfWindowSize, state.tileSize, {20, 200});
@@ -171,13 +163,20 @@ void renderEndScreen(gameState &state, cstmEngine::vec2 halfWindowSize) {
   glUniformMatrix4fv(glGetUniformLocation(state.uiShader.getShaderProgram(), "view"),
                      1, GL_FALSE, glm::value_ptr(state.view));
 
-  if (glfwGetKey(gameWindow.m_window, GLFW_KEY_Q) == GLFW_PRESS) {
+  if (glfwGetKey(gameWindow.m_window, GLFW_KEY_Q) == GLFW_PRESS)
     state.playState = GAME_CLOSE;
-    return;
+
+  if (glfwGetKey(gameWindow.m_window, GLFW_KEY_R) == GLFW_PRESS) {
+    state.crntLevel.p = &state.levels[0];
+    state.player.levelState.m_points = 0;
+    state.player.m_viewSide = game::SIDE_RIGHT;
+    state.player.m_phy.resetPosition(halfWindowSize, state.tileSize, {20, 200});
+    state.playState = GAME_PLAY;
   }
 
   state.font.renderCentered(state.uiBatch, "%wgame %rover", {0, 20}, 32);
-  state.font.renderCentered(state.uiBatch, "%wpress 'q' to quit!", {0, -20}, 16);
+  state.font.renderCentered(state.uiBatch, "%wpress %g'r' %wto restart!", {0, -20}, 16);
+  state.font.renderCentered(state.uiBatch, "%wpress %y'q' %wto quit!", {0, -40}, 16);
 
   state.uiBatch.endFrame();
   gameWindow.endFrame();
@@ -203,7 +202,7 @@ int main() {
   state.mainBatch.create();
   state.uiBatch.create();
 
-  state.player.init({state.tileSize, state.tileSize}, 20.0f, 0.05f);
+  state.player.init({state.tileSize, state.tileSize}, 20.0f, 0.1f);
 
   state.levels = game::levelRead({
     "./levels/level1.txt",

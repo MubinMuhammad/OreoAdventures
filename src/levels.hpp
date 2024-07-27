@@ -5,6 +5,7 @@
 #include "../cstmEngine/batch.hpp"
 #include "texture.hpp"
 #include "player.hpp"
+#include "playState.hpp"
 
 #include <string>
 #include <vector>
@@ -42,7 +43,7 @@ namespace game {
     // conditions.
     void renderLevel(
       cstmEngine::Batch &batch,
-      game::Player &player,
+      game::Player &player, gamePlayState &playState,
       std::vector<cstmEngine::vec2> &textureGrid,
       std::vector<cstmEngine::vec2> &quadSizes,
       int tileSize,
