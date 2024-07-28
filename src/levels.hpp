@@ -27,6 +27,7 @@ namespace game {
     // the length of the level this is basically the
     // width of the level useful when generating clouds.
     uint32_t m_length;
+    uint32_t m_time;
     // the coinstate is a considered as a 64 true or false
     // gates if the i-th bit is 0 then it means the coin
     // has been taken by the player and we should not be

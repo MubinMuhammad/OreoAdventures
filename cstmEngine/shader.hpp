@@ -2,7 +2,9 @@
 #define _SHADER_HPP_
 
 #include "glad/include/glad/glad.h"
-#include <iostream>
+
+#include <stddef.h>
+#include <cstdio>
 
 namespace cstmEngine {
   class Shader {
@@ -49,7 +51,7 @@ private:
 
       if (!success) {
         glGetShaderInfoLog(vsfs_shader_bin, 512, NULL, logInfo);
-        fprintf(stderr, "[error][%d:%s][%s] %s\n", __LINE__, __FILE__, 
+        fprintf(stderr, "[error][%d:%s][%s] %s\n", __LINE__, __FILE__,
                 shader_type == GL_VERTEX_SHADER ? "vertex" : "fragment", logInfo);
       }
     }

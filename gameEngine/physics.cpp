@@ -19,7 +19,6 @@ void gameEngine::Physics::update(
 
   m_velocity.x += m_accel.x;
   m_velocity.y += m_accel.y;
-//  m_velocity.y -= GRAVITY;
 
   if (m_velocity.x > 0.0f) m_velocity.x -= m_friction.x / m_mass;
   else if (m_velocity.x < 0.0f) m_velocity.x += m_friction.x / m_mass;

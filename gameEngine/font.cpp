@@ -6,7 +6,7 @@ static std::string charMap =
 "ABCDEFGHIJKLMNOP\n"
 "QRSTUVWXYZ012345\n"
 "6789~!@#$%^&*()-\n"
-"+=[]{}|;:'\"<>?/,";
+"+=[],.|;:'\"<>?/\\";
 
 static constexpr cstmEngine::vec3 fontColors[] = {
   { 21 / 255.0f,  29 / 255.0f,  40 / 255.0f}, // black

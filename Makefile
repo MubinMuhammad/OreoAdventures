@@ -5,6 +5,7 @@ SRC_FILES := src/main.cpp \
 	src/texture.cpp \
 	src/player.cpp \
 	src/levels.cpp \
+	src/utils.cpp \
 	gameEngine/physics.cpp \
 	gameEngine/texture.cpp \
 	gameEngine/font.cpp \

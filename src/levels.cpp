@@ -1,6 +1,7 @@
 #include "levels.hpp"
 #include "playState.hpp"
 #include "texture.hpp"
+#include "utils.hpp"
 #include "../gameEngine/texture.hpp"
 
 #include <GLFW/glfw3.h>
@@ -143,7 +144,10 @@ std::vector<game::Level> game::levelRead(std::vector<std::string> levelPaths) {
     std::string line = "";
     std::getline(crntLevelMap, line);
 
-    levels[crntLevelIdx].m_points = std::stoi(line);
+    std::vector<std::string> tokens = game::tokenize(line, ',');
+
+    levels[crntLevelIdx].m_points = std::stoi(tokens[0]);
+    levels[crntLevelIdx].m_time = std::stoi(tokens[1]);
 
     while (std::getline(crntLevelMap, line)) {
       if (line.empty()) continue;

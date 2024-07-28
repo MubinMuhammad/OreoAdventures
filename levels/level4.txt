@@ -1,0 +1,23 @@
+200,40
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|                                                                                 C                                  C
+|                             C                                                  ???                                     
+|       C                   _____                                                                                   NNN       C               
+|                                                       CC                                            C                     _____
+|                                                      _____                                         NNN  C
+|                C   NNN                                                  TT                        ddddd
+|               C  NNNNN                                        C       GGGGGG                   C ddddddd C             C
+|              C  NNNNNN              C        TT                      GddddddG                   ddddddddd                       C
+|     T   T    bNNNNNNNN              W     aaaaaaaaa            T      GGGGGG         T     C   NNNNNNNNNNN  C  T   T  NNN      ???    D
+|aaaaaaaaaaaaaaaaaaaaaaaawwwwwwwwwwaaaaaaaaaaaaaaaaaaawwwwwwwaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaawwwwwaaaaaaaaa

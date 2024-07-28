@@ -47,6 +47,7 @@ struct gameTileMap {
 
 struct gameCrntLevel {
   game::Level *p;
+  gameEngine::Time levelTimer;
   int idx = 0;
 };
 
@@ -77,76 +78,86 @@ void windowResizeCallback(GLFWwindow *window, int w, int h) {
 }
 
 void renderGame(gameState &state, cstmEngine::vec2 halfWindowSize) {
-    state.timer.update();
+  state.timer.update();
+  state.crntLevel.levelTimer.m_crnt = glfwGetTime();
 
-    state.player.updateInput(gameWindow, state.timer, state.tileSize);
-    gameWindow.beginFrame(87/255.0f, 114/255.0f, 119/255.0f, 1.0f);
+  state.player.updateInput(gameWindow, state.timer, state.tileSize);
+  gameWindow.beginFrame(87/255.0f, 114/255.0f, 119/255.0f, 1.0f);
 
-    state.mainBatch.beginFrame();
-    state.mainShader.use();
-    state.textures.use(0, "gameAtlas", &state.mainShader);
+  state.mainBatch.beginFrame();
+  state.mainShader.use();
+  state.textures.use(0, "gameAtlas", &state.mainShader);
 
-    state.proj = glm::ortho(-halfWindowSize.x, halfWindowSize.x, -halfWindowSize.y, halfWindowSize.y,
-                            0.1f, 100.0f);
+  state.proj = glm::ortho(-halfWindowSize.x, halfWindowSize.x, -halfWindowSize.y, halfWindowSize.y,
+                          0.1f, 100.0f);
 
-    glUniformMatrix4fv(glGetUniformLocation(state.mainShader.getShaderProgram(), "orthoProj"),
-                       1, GL_FALSE, glm::value_ptr(state.proj));
+  glUniformMatrix4fv(glGetUniformLocation(state.mainShader.getShaderProgram(), "orthoProj"),
+                     1, GL_FALSE, glm::value_ptr(state.proj));
 
-    state.view = glm::translate(glm::mat4(1.0f),
-                                glm::vec3(
-                                std::clamp(-state.player.m_phy.m_pos.x,
-                                           -(((float)state.crntLevel.p->m_length - 1) *state.tileSize - gameWindow.m_width), 0.0f),
-                                std::clamp(-state.player.m_phy.m_pos.y, -500.0f, 0.0f), -1.0f));
+  state.view = glm::translate(glm::mat4(1.0f),
+                              glm::vec3(
+                              std::clamp(-state.player.m_phy.m_pos.x,
+                                         -(((float)state.crntLevel.p->m_length - 1) * state.tileSize - gameWindow.m_width), 0.0f),
+                              std::clamp(-state.player.m_phy.m_pos.y, -500.0f, 0.0f), -1.0f));
 
-    glUniformMatrix4fv(glGetUniformLocation(state.mainShader.getShaderProgram(), "view"),
-                       1, GL_FALSE, glm::value_ptr(state.view));
+  glUniformMatrix4fv(glGetUniformLocation(state.mainShader.getShaderProgram(), "view"),
+                     1, GL_FALSE, glm::value_ptr(state.view));
 
-    game::renderCloud(state.mainBatch, state.tileMap.maps, state.tileMap.sizes, state.tileSize,
-                      0, 4, state.seed, state.crntLevel.p->m_length);
+  game::renderCloud(state.mainBatch, state.tileMap.maps, state.tileMap.sizes, state.tileSize,
+                    0, 4, state.seed, state.crntLevel.p->m_length);
 
-    state.crntLevel.p->renderLevel(state.mainBatch, state.player, state.playState,
-                                   state.tileMap.maps, state.tileMap.sizes, state.tileSize,
-                                   {(float)gameWindow.m_width, (float)gameWindow.m_height}, state.seed);
+  state.crntLevel.p->renderLevel(state.mainBatch, state.player, state.playState,
+                                 state.tileMap.maps, state.tileMap.sizes, state.tileSize,
+                                 {(float)gameWindow.m_width, (float)gameWindow.m_height}, state.seed);
 
-    state.player.render(state.mainBatch, state.tileMap.maps);
-    state.mainBatch.endFrame();
+  state.player.render(state.mainBatch, state.tileMap.maps);
+  state.mainBatch.endFrame();
 
-    state.uiBatch.beginFrame();
-    state.uiShader.use();
-    state.textures.use(1, "fontAtlas", &state.uiShader);
+  state.uiBatch.beginFrame();
+  state.uiShader.use();
+  state.textures.use(1, "fontAtlas", &state.uiShader);
 
-    glUniformMatrix4fv(glGetUniformLocation(state.uiShader.getShaderProgram(), "orthoProj"),
-                       1, GL_FALSE, glm::value_ptr(state.proj));
+  glUniformMatrix4fv(glGetUniformLocation(state.uiShader.getShaderProgram(), "orthoProj"),
+                     1, GL_FALSE, glm::value_ptr(state.proj));
 
-    state.view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+  state.view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 
-    glUniformMatrix4fv(glGetUniformLocation(state.uiShader.getShaderProgram(), "view"),
-                       1, GL_FALSE, glm::value_ptr(state.view));
+  glUniformMatrix4fv(glGetUniformLocation(state.uiShader.getShaderProgram(), "view"),
+                     1, GL_FALSE, glm::value_ptr(state.view));
 
-    std::string uiStatusLineString = "%gPoints:" + std::to_string(state.player.levelState.m_points);
-    uiStatusLineString += "%b Level:" + std::to_string(state.crntLevel.idx + 1);
-    std::string doorWarningMsg = "You need %apoints for next level!";
+  std::string uiStatusLineString = "%gPoints:" + std::to_string(state.player.levelState.m_points);
+  uiStatusLineString += "%b Level:" + std::to_string(state.crntLevel.idx + 1);
+  uiStatusLineString += "%r Time:" + std::to_string(state.crntLevel.p->m_time -
+                                                    state.crntLevel.levelTimer.m_crnt +
+                                                    state.crntLevel.levelTimer.m_last);
+  std::string doorWarningMsg = "You need %apoints for next level!";
 
-    if (state.player.levelState.m_doorMsg == true) {
-      doorWarningMsg.insert(9, "%r" + std::to_string(state.crntLevel.p->m_points) + " ");
-      state.font.renderCentered(state.uiBatch, doorWarningMsg, {0, 0}, 20);
-    }
+  if (state.player.levelState.m_doorMsg == true) {
+    doorWarningMsg.insert(9, "%r" + std::to_string(state.crntLevel.p->m_points) + " ");
+    state.font.renderCentered(state.uiBatch, doorWarningMsg, {0, 0}, 20);
+  }
 
-    if (state.player.levelState.m_passed) {
-      state.player.levelState.m_passed = false;
+  if (state.player.levelState.m_passed) {
+    state.player.levelState.m_passed = false;
 
-      if (state.crntLevel.idx == state.levels.size() - 1) state.playState = GAME_ENDSCREEN;
+    if (state.crntLevel.idx == state.levels.size() - 1) state.playState = GAME_ENDSCREEN;
 
-      state.player.levelState.m_points = 0;
-      state.player.m_phy.resetPosition(halfWindowSize, state.tileSize, {20, 200});
-      state.crntLevel.idx++;
-      state.crntLevel.p = &state.levels[state.crntLevel.idx];
-    }
+    state.player.levelState.m_points = 0;
+    state.player.m_phy.resetPosition(halfWindowSize, state.tileSize, {20, 200});
+    state.crntLevel.idx++;
+    state.crntLevel.levelTimer.m_last = glfwGetTime();
+    state.crntLevel.p = &state.levels[state.crntLevel.idx];
+  }
 
-    state.font.render(state.uiBatch, uiStatusLineString,
-                      {-halfWindowSize.x + 9 + 10, halfWindowSize.y - 9 - 10}, 20);
-    state.uiBatch.endFrame();
-    gameWindow.endFrame();
+  if (state.crntLevel.levelTimer.m_crnt - state.crntLevel.levelTimer.m_last >=
+      state.crntLevel.p->m_time) {
+    state.playState = GAME_ENDSCREEN;
+  }
+
+  state.font.render(state.uiBatch, uiStatusLineString,
+                    {-halfWindowSize.x + 9 + 10, halfWindowSize.y - 9 - 10}, 20);
+  state.uiBatch.endFrame();
+  gameWindow.endFrame();
 }
 
 void renderEndScreen(gameState &state, cstmEngine::vec2 halfWindowSize) {
@@ -176,6 +187,7 @@ void renderEndScreen(gameState &state, cstmEngine::vec2 halfWindowSize) {
     }
 
     state.crntLevel.idx = 0;
+    state.crntLevel.levelTimer.m_last = glfwGetTime();
     state.crntLevel.p = &state.levels[state.crntLevel.idx];
     state.playState = GAME_PLAY;
   }
@@ -189,7 +201,7 @@ void renderEndScreen(gameState &state, cstmEngine::vec2 halfWindowSize) {
 }
 
 int main() {
-  gameWindow.create(720, 480, "Mario Adventures");
+  gameWindow.create(960, 480, "Mario Adventures");
   glfwSetWindowSizeCallback(gameWindow.m_window, windowResizeCallback);
 
   gameState state;
@@ -213,9 +225,13 @@ int main() {
   state.levels = game::levelRead({
     "./levels/level1.txt",
     "./levels/level2.txt",
-    "./levels/level3.txt"
+    "./levels/level3.txt",
+    "./levels/level4.txt",
+    "./levels/level5.txt",
   });
   state.crntLevel.p = &state.levels[state.crntLevel.idx];
+
+  state.crntLevel.levelTimer.m_last = glfwGetTime();
 
   while (gameWindow.isOpen()) {
     cstmEngine::vec2 halfWindowSize = {

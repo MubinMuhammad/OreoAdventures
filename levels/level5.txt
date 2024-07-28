@@ -1,0 +1,12 @@
+250,45
+|
+|                                                                                                                                                           
+|                      C                                                                               
+|                                                                                 C                                                  C
+|                      C                                                                       C                      C
+|                     NN                                       C      C          ___   C                              bb            ddd                       C             C
+|                    ????            C C C                   NNNNN   ___    C          N      NNN         C           NN     C    NNNNN              C                     ???
+|                   NNNNNN          _______                 bbbbbbb        ___         N                _____        bbbb       ddddddd             ???         C      C              
+|         cc       ????????                         c        NNNNN    c         c      N     CCCCC              cc  NNNNNN     NNNNNNNN            NNNNN       bbb                D
+|sssssssssssssssssssssssssssssssswwwwwwwwwwwwwwssssssssssssssssssssssssssswwwwwsssssssssssssssssssssswwwwwwwwwwssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+|sssssssssssssssssssssssssssssssswwwwwwwwwwwwwwssssssssssssssssssssssssssswwwwwsssssssssssssssssssssswwwwwwwwwwssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
