@@ -38,27 +38,16 @@ namespace game {
     // renderLevel draws the level with the RIE
     // it maps the correct tiles and checks player
     // conditions.
-    void renderLevel(
-      cstmEngine::Batch &batch,
-      game::Player &player, gamePlayState &playState,
-      std::vector<cstmEngine::vec2> &textureGrid,
-      std::vector<cstmEngine::vec2> &quadSizes,
-      int tileSize,
-      cstmEngine::vec2 windowSize,
-      uint32_t gameSeed
-    );
+    void renderLevel(cstmEngine::Batch &batch, game::Player &player, gamePlayState &playState,
+                     std::vector<cstmEngine::vec2> &textureGrid, std::vector<cstmEngine::vec2> &quadSizes,
+                     int tileSize, cstmEngine::vec2 windowSize, uint32_t gameSeed);
 
     private:
     // this function is used to render a single
     // tile it's private because it's only being
     // used by the renderLevel()
-      void renderTile(
-        cstmEngine::Batch &batch,
-        std::vector<cstmEngine::vec2> &textureGrid,
-        cstmEngine::vec2 tileSize,
-        cstmEngine::vec2 coord,
-        game::BlockType bt
-      );
+      void renderTile(cstmEngine::Batch &batch, std::vector<cstmEngine::vec2> &textureGrid,
+                      cstmEngine::vec2 tileSize, cstmEngine::vec2 coord, game::BlockType bt);
   };
 
   std::vector<Level> levelRead(std::vector<std::string> levelPaths);
@@ -68,16 +57,9 @@ namespace game {
   // going to be used along side with rand()
   // function in C to generate random numbers
   // with the given seed.
-  void renderCloud(
-    cstmEngine::Batch &batch,
-    std::vector<cstmEngine::vec2> &textureGrid,
-    std::vector<cstmEngine::vec2> &quadSizes,
-    int tileSize,
-    int cloudHeight,
-    uint32_t variability,
-    uint32_t seed,
-    uint32_t levelLength
-  );
+  void renderCloud(cstmEngine::Batch &batch, std::vector<cstmEngine::vec2> &textureGrid,
+                   std::vector<cstmEngine::vec2> &quadSizes, int tileSize, int cloudHeight,
+                   uint32_t variability, uint32_t seed, uint32_t levelLength);
 }
 
 #endif

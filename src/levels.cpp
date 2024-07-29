@@ -165,15 +165,10 @@ std::vector<game::Level> game::levelRead(std::vector<std::string> levelPaths) {
 
 // renders the level in the game.
 
-void game::Level::renderLevel(
-  cstmEngine::Batch &batch,
-  game::Player &player, gamePlayState &playState,
-  std::vector<cstmEngine::vec2> &textureGrid,
-  std::vector<cstmEngine::vec2> &quadSizes,
-  int tileSize,
-  cstmEngine::vec2 windowSize,
-  uint32_t gameSeed
-) {
+void game::Level::renderLevel(cstmEngine::Batch &batch, game::Player &player,
+                              gamePlayState &playState, std::vector<cstmEngine::vec2> &textureGrid,
+                              std::vector<cstmEngine::vec2> &quadSizes, int tileSize,
+                              cstmEngine::vec2 windowSize, uint32_t gameSeed) {
   // a random seed is used here so that tree and bush
   // types are random.
   srand(gameSeed);
@@ -341,15 +336,10 @@ void game::Level::renderLevel(
 
         // if a collision did happend with the player
         // and the it was a coin. Then...
-        if (
-          player.m_phy.checkCollision(
-            {tilePos.x + (tileOffset.x * tileSize),
-             tilePos.y + (tileOffset.y * tileSize)},
-            {quadSizes[bt].x, quadSizes[bt].y},
-            tileSize
-          ) && 
-          bt == TILE_COIN
-        ) {
+        if (player.m_phy.checkCollision({tilePos.x + (tileOffset.x * tileSize),
+                                         tilePos.y + (tileOffset.y * tileSize)},
+                                        {quadSizes[bt].x, quadSizes[bt].y}, tileSize) &&
+            bt == TILE_COIN) {
           // we set the coinIdx-th bit to 0.
           m_coinState &= ~(1 << coinIdx);
           // we also add a point so the player can
@@ -359,15 +349,10 @@ void game::Level::renderLevel(
 
         // if a collision did happend with the player
         // and the it was a door. Then...
-        if (
-          player.m_phy.checkCollision(
-            {tilePos.x + (tileOffset.x * tileSize),
-             tilePos.y + (tileOffset.y * tileSize)},
-            {quadSizes[bt].x, quadSizes[bt].y},
-            tileSize
-          ) && 
-          bt == TILE_DOOR
-        ) {
+        if (player.m_phy.checkCollision({tilePos.x + (tileOffset.x * tileSize),
+                                         tilePos.y + (tileOffset.y * tileSize)},
+                                        {quadSizes[bt].x, quadSizes[bt].y}, tileSize) &&
+            bt == TILE_DOOR) {
           // __builtin_popcountll returns how many bits are on
           // in a 64bit unsigned integer. By doing a (64 - that) we now
           // know how many bit's are all in m_coinState, we multiply
@@ -379,27 +364,17 @@ void game::Level::renderLevel(
           else if (player.levelState.m_passed == false) player.levelState.m_passed = true;
         }
 
-        if (
-          player.m_phy.checkCollision(
-            {tilePos.x + (tileOffset.x * tileSize),
-             tilePos.y + (tileOffset.y * tileSize)},
-            {quadSizes[bt].x, quadSizes[bt].y},
-            tileSize
-          ) && 
-          bt == TILE_NITROGEN_BOX
-        ) {
+        if (player.m_phy.checkCollision({tilePos.x + (tileOffset.x * tileSize),
+                                         tilePos.y + (tileOffset.y * tileSize)},
+                                        {quadSizes[bt].x, quadSizes[bt].y}, tileSize) &&
+            bt == TILE_NITROGEN_BOX) {
           playState = GAME_ENDSCREEN;
         }
 
         // now, if the bt is not _TILE_EMPTY we shall render that tile!
         if (bt != _TILE_EMPTY) {
-          renderTile(
-            batch,
-            textureGrid,
-            { quadSizes[bt].x * tileSize, quadSizes[bt].y * tileSize },
-            { tilePos.x + (tileOffset.x * tileSize), tilePos.y + (tileOffset.y * tileSize) },
-            bt
-          );
+          renderTile(batch, textureGrid, {quadSizes[bt].x * tileSize, quadSizes[bt].y * tileSize},
+                    {tilePos.x + (tileOffset.x * tileSize), tilePos.y + (tileOffset.y * tileSize)}, bt);
         }
 
         // we increase the tileX by tileSize each tile
@@ -429,13 +404,8 @@ void game::Level::renderLevel(
 // on the screen. This function is called multiple
 // times in renderLevel function to render multiple
 // tile and create a level.
-void game::Level::renderTile(
-  cstmEngine::Batch &batch,
-  std::vector<cstmEngine::vec2> &textureGrid,
-  cstmEngine::vec2 tileSize,
-  cstmEngine::vec2 coord,
-  game::BlockType bt
-) {
+void game::Level::renderTile(cstmEngine::Batch &batch, std::vector<cstmEngine::vec2> &textureGrid,
+                             cstmEngine::vec2 tileSize, cstmEngine::vec2 coord, game::BlockType bt) {
   // texCoords is a has 4 coordinates, these are top-left, bottom-left,
   // bottom-right and top-right. these coordinates are later used with
   // OpenGL to draw a part of the texture atlas.
@@ -447,25 +417,15 @@ void game::Level::renderTile(
 
   // The batch then draws the generates correct vertices to draw
   // a tile.
-  batch.drawQuad(
-    {tileSize.x, tileSize.y},
-    {coord.x, coord.y},
-    texCoords
-  );
+  batch.drawQuad({tileSize.x, tileSize.y}, {coord.x, coord.y}, texCoords);
 }
 
 // render cloud function is used for generating cloud at
 // a certain level height.
-void game::renderCloud(
-  cstmEngine::Batch &batch,
-  std::vector<cstmEngine::vec2> &textureGrid,
-  std::vector<cstmEngine::vec2> &quadSizes,
-  int tileSize,
-  int cloudHeight,
-  uint32_t variability,
-  uint32_t seed,
-  uint32_t levelLength
-) {
+void game::renderCloud(cstmEngine::Batch &batch, std::vector<cstmEngine::vec2> &textureGrid,
+                       std::vector<cstmEngine::vec2> &quadSizes, int tileSize,
+                       int cloudHeight, uint32_t variability, uint32_t seed,
+                       uint32_t levelLength) {
   // Here, we set the seed that's used create randomness
   // in the positions and type of the clouds.
   srand(seed);

@@ -29,12 +29,9 @@ namespace game {
 
   // gives us a vector v, full of texture coordinates of each
   // sprite in given textureAtlas.
-  void textureGetCoordsIdxs(
-    std::vector<cstmEngine::vec2> &v,
-    std::vector<cstmEngine::vec2> &quadSize,
-    cstmEngine::vec2 atlasWH,
-    int texFactor
-  );
+  void textureGetCoordsIdxs(std::vector<cstmEngine::vec2> &v,
+                            std::vector<cstmEngine::vec2> &quadSize,
+                            cstmEngine::vec2 atlasWH, int texFactor);
 }
 
 #endif

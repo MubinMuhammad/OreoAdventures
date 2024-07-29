@@ -16,10 +16,7 @@ void game::Player::init(cstmEngine::vec2 size, float mass, float frameInterval) 
 
 // the render function is used to render the player
 // on screen.
-void game::Player::render(
-  cstmEngine::Batch &batch,
-  const std::vector<cstmEngine::vec2> &maps
-) {
+void game::Player::render(cstmEngine::Batch &batch, const std::vector<cstmEngine::vec2> &maps) {
   m_timer.m_crnt = glfwGetTime();
   // the if statement checks if works like a stopwatch that
   // is begin ran after a certain interval. The interval is
@@ -62,10 +59,8 @@ void game::Player::render(
   batch.drawQuad(m_phy.m_size, m_phy.m_pos, texCoords);
 }
 
-void game::Player::updateInput(
-  const cstmEngine::Window &window, const gameEngine::Time &timer,
-  float gameTileSize
-) {
+void game::Player::updateInput(const cstmEngine::Window &window, const gameEngine::Time &timer,
+                               float gameTileSize) {
     // here we just set a different forces when the player
     // presses specific keys.
     cstmEngine::vec2 playerForce;

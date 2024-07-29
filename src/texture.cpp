@@ -3,13 +3,8 @@
 
 // this function stores the texture coordinates
 // in the vector &v.
-static void nextTextureCoords(
-  cstmEngine::ivec2 &coords,
-  int &k, std::vector<cstmEngine::vec2> &v,
-  cstmEngine::vec2 sizeFactors,
-  cstmEngine::vec2 atlas_wh,
-  int texFactor
-) {
+static void nextTextureCoords(cstmEngine::ivec2 &coords, int &k, std::vector<cstmEngine::vec2> &v,
+                              cstmEngine::vec2 sizeFactors, cstmEngine::vec2 atlas_wh, int texFactor) {
   // as for texture coordinates we have 4 of them
   // they are top-left, bottom-left, bottom-right
   // top-right.
@@ -44,12 +39,9 @@ static void nextTextureCoords(
   k += 4;
 }
 
-void game::textureGetCoordsIdxs(
-  std::vector<cstmEngine::vec2> &v,
-  std::vector<cstmEngine::vec2> &out_quad_size,
-  cstmEngine::vec2 atlas_wh,
-  int tex_factor
-) {
+void game::textureGetCoordsIdxs(std::vector<cstmEngine::vec2> &v,
+                                std::vector<cstmEngine::vec2> &out_quad_size,
+                                cstmEngine::vec2 atlas_wh, int tex_factor) {
   v.resize((4 + 3 + 2 + 13 + 2 + 3 + 2 + 4) * 4);
   out_quad_size.resize(4 + 3 + 2 + 13 + 2 + 3 + 2 + 4);
   int k = 0;
