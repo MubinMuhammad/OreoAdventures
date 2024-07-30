@@ -32,7 +32,7 @@ public:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size, indices, GL_STATIC_DRAW);
       }
-      
+
       glEnableVertexAttribArray(0);
       glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
@@ -49,7 +49,7 @@ public:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
     }
-    
+
     void destroy() {
       glDeleteBuffers(1, &m_vbo);
       glDeleteBuffers(1, &m_ebo);

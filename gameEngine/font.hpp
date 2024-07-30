@@ -14,24 +14,12 @@ namespace gameEngine {
 
     void create(cstmEngine::vec2 fontAtlasSize);
 
-    void render(
-      cstmEngine::Batch &batch,
-      std::string str,
-      cstmEngine::vec2 textPos,
-      uint32_t fontSize
-    );
+    void render(cstmEngine::Batch &batch, std::string str, cstmEngine::vec2 textPos,
+                uint32_t fontSize);
 
-    void renderCentered(
-      cstmEngine::Batch &batch,
-      std::string str,
-      cstmEngine::vec2 textPos,
-      uint32_t fontSize
-    );
+    void renderCentered(cstmEngine::Batch &batch, std::string str,
+                        cstmEngine::vec2 textPos, uint32_t fontSize);
   };
-
-  inline int FontGetTextWidth(std::string s, int fontSize) {
-    return s.size() * fontSize;
-  }
 }
 
 #endif

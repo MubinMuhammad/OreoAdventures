@@ -54,7 +54,7 @@ namespace cstmEngine {
     bool isOpen() {
       return !glfwWindowShouldClose(m_window);
     }
-    
+
     void beginFrame(float r, float g, float b, float a) {
       glClear(GL_COLOR_BUFFER_BIT);
       glClearColor(r, g, b, a);

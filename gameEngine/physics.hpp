@@ -14,26 +14,14 @@ namespace gameEngine {
     cstmEngine::vec2 m_accel;
     cstmEngine::vec2 m_friction;
 
-    void update(
-      float deltaTime,
-      cstmEngine::vec2 force,
-      cstmEngine::vec2 frictionCoefficient,
-      cstmEngine::vec2 halfWindowSize,
-      float tileSize,
-      cstmEngine::vec2 initialPos
-    );
+    void update(float deltaTime, cstmEngine::vec2 force, cstmEngine::vec2 frictionCoefficient,
+                cstmEngine::vec2 halfWindowSize, float tileSize, cstmEngine::vec2 initialPos);
 
-    void resetPosition(
-      cstmEngine::vec2 halfWindowSize,
-      float tileSize,
-      cstmEngine::vec2 newPos
-    );
+    void resetPosition(cstmEngine::vec2 halfWindowSize, float tileSize,
+                       cstmEngine::vec2 newPos);
 
-    bool checkCollision(
-      cstmEngine::vec2 objCoords,
-      cstmEngine::vec2 objSizeFactors,
-      int squareSize
-    );
+    bool checkCollision(cstmEngine::vec2 objCoords, cstmEngine::vec2 objSizeFactors,
+                        int squareSize);
   };
 }
 

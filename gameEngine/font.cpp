@@ -44,10 +44,8 @@ static int getColorStrSize(std::string s) {
     if (i != s.size() - 1 && s[i] == '%') {
       char c = s[i + 1];
 
-      if (
-        c == 'a' || c == 'w' || c == 'r' || c == 'g' || c == 'b' ||
-        c == 'y' || c == 'o' || c == 'c' || c == 'p'
-      ) i += 2;
+      if (c == 'a' || c == 'w' || c == 'r' || c == 'g' || c == 'b' ||
+          c == 'y' || c == 'o' || c == 'c' || c == 'p') i += 2;
     }
   }
 
@@ -59,11 +57,9 @@ void gameEngine::Font::create(cstmEngine::vec2 fontAtlasSize) {
   int x = 0, y = 0;
 
   for (int i = 0, k = 0; i < charMap.size(); i++) {
-    gameEngine::textureCropAtlas(
-      &fontAtlasCoords[k], &fontAtlasCoords[k + 1],
-      &fontAtlasCoords[k + 2], &fontAtlasCoords[k + 3],
-      fontAtlasSize, 8, {1, 1}, {(float)x, (float)y}
-    );
+    gameEngine::textureCropAtlas(&fontAtlasCoords[k], &fontAtlasCoords[k + 1],
+                                 &fontAtlasCoords[k + 2], &fontAtlasCoords[k + 3],
+                                 fontAtlasSize, 8, {1, 1}, {(float)x, (float)y});
 
     x++;
     if (charMap[i] == '\n') {
@@ -75,12 +71,8 @@ void gameEngine::Font::create(cstmEngine::vec2 fontAtlasSize) {
   }
 }
 
-void gameEngine::Font::render(
-  cstmEngine::Batch &batch,
-  std::string str,
-  cstmEngine::vec2 textPos,
-  uint32_t fontSize
-) {
+void gameEngine::Font::render(cstmEngine::Batch &batch, std::string str,
+                              cstmEngine::vec2 textPos, uint32_t fontSize) {
   cstmEngine::vec3 color = fontColors[0];
 
   for (int i = 0; i < str.size(); i++) {
@@ -110,21 +102,14 @@ void gameEngine::Font::render(
     cstmEngine::vec2 charTexCoords[4];
     gameEngine::textureGetCoords(fontAtlasCoords, k, charTexCoords);
 
-    batch.drawQuad(
-      {(float)fontSize, (float)fontSize},
-      textPos, charTexCoords, color
-    );
+    batch.drawQuad({(float)fontSize, (float)fontSize}, textPos, charTexCoords, color);
 
     textPos.x += fontSize;
   }
 }
 
-void gameEngine::Font::renderCentered(
-  cstmEngine::Batch &batch,
-  std::string str,
-  cstmEngine::vec2 textPos,
-  uint32_t fontSize
-) {
+void gameEngine::Font::renderCentered(cstmEngine::Batch &batch, std::string str,
+                                      cstmEngine::vec2 textPos, uint32_t fontSize) {
   cstmEngine::vec3 color = fontColors[0];
 
   int halfTextLength = (getColorStrSize(str) * fontSize) / 2;

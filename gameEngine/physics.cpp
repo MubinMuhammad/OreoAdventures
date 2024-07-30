@@ -1,13 +1,9 @@
 #include "physics.hpp"
 
-void gameEngine::Physics::update(
-      float deltaTime,
-      cstmEngine::vec2 force,
-      cstmEngine::vec2 frictionCoefficient,
-      cstmEngine::vec2 halfWindowSize,
-      float tileSize,
-      cstmEngine::vec2 initialPos
-) {
+void gameEngine::Physics::update(float deltaTime, cstmEngine::vec2 force,
+                                 cstmEngine::vec2 frictionCoefficient,
+                                 cstmEngine::vec2 halfWindowSize, float tileSize,
+                                 cstmEngine::vec2 initialPos) {
   m_friction.x = frictionCoefficient.x * GRAVITY * m_mass;
   m_friction.y = frictionCoefficient.y * GRAVITY * m_mass;
 
@@ -33,11 +29,8 @@ void gameEngine::Physics::update(
   m_pos.y += m_tmpPos.y;
 }
 
-void gameEngine::Physics::resetPosition(
-  cstmEngine::vec2 halfWindowSize,
-  float tileSize,
-  cstmEngine::vec2 newPos
-) {
+void gameEngine::Physics::resetPosition(cstmEngine::vec2 halfWindowSize, float tileSize,
+                                        cstmEngine::vec2 newPos) {
   m_pos.x = -halfWindowSize.x + tileSize / 2.0f + newPos.x;
   m_pos.y = -halfWindowSize.y + tileSize / 2.0f + newPos.y;
 
@@ -46,12 +39,9 @@ void gameEngine::Physics::resetPosition(
   m_accel = {0.0f, 0.0f};
 }
 
-bool gameEngine::Physics::checkCollision(
-  cstmEngine::vec2 objCoords,
-  cstmEngine::vec2 objSizeFactors,
-  int squareSize
-) {
-  return 
+bool gameEngine::Physics::checkCollision(cstmEngine::vec2 objCoords, cstmEngine::vec2 objSizeFactors,
+                                         int squareSize) {
+  return
     m_pos.x + (m_size.x / 2) >= objCoords.x - ((objSizeFactors.x * squareSize) / 2) &&
     m_pos.x - (m_size.x / 2) <= objCoords.x + ((objSizeFactors.x * squareSize) / 2) &&
     m_pos.y + (m_size.y / 2) >= objCoords.y - ((objSizeFactors.y * squareSize) / 2) &&
