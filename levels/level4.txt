@@ -12,8 +12,8 @@
 |
 |
 |                                                                                 C                                  C
-|                             C                                                  ???                                     
-|       C                   _____                                                                                   NNN       C               
+|                             C                                                  ???
+|       C                   _____                                                                                   NNN       C
 |                                                       CC                                            C                     _____
 |                                                      _____                                         NNN  C
 |                C   NNN                                                  TT                        ddddd
