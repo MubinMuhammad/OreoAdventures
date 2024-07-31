@@ -140,7 +140,7 @@ void renderGame(gameState &state, cstmEngine::vec2 halfWindowSize) {
   if (state.player.levelState.m_passed) {
     state.player.levelState.m_passed = false;
 
-    if (state.crntLevel.idx == state.levels.size() - 1) state.playState = GAME_ENDSCREEN;
+    if (state.crntLevel.idx == state.levels.size() - 1) state.playState = GAME_CONGRAT;
 
     state.player.levelState.m_points = 0;
     state.player.m_phy.resetPosition(halfWindowSize, state.tileSize, {20, 200});
@@ -156,6 +156,31 @@ void renderGame(gameState &state, cstmEngine::vec2 halfWindowSize) {
 
   state.font.render(state.uiBatch, uiStatusLineString,
                     {-halfWindowSize.x + 9 + 10, halfWindowSize.y - 9 - 10}, 20);
+  state.uiBatch.endFrame();
+  gameWindow.endFrame();
+}
+
+void congratScreen(gameState &state, cstmEngine::vec2 halfWindowSize) {
+  gameWindow.beginFrame(16/255.0f, 20/255.0f, 31/255.0f, 1.0f);
+  state.uiBatch.beginFrame();
+
+  state.proj = glm::ortho(-halfWindowSize.x, halfWindowSize.x, -halfWindowSize.y, halfWindowSize.y,
+                          0.1f, 100.0f);
+
+  glUniformMatrix4fv(glGetUniformLocation(state.mainShader.getShaderProgram(), "orthoProj"),
+                     1, GL_FALSE, glm::value_ptr(state.proj));
+
+  state.view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+
+  glUniformMatrix4fv(glGetUniformLocation(state.uiShader.getShaderProgram(), "view"),
+                     1, GL_FALSE, glm::value_ptr(state.view));
+
+  if (glfwGetKey(gameWindow.m_window, GLFW_KEY_Q) == GLFW_PRESS) state.playState = GAME_CLOSE;
+
+  state.font.renderCentered(state.uiBatch, "%gCongratulation!", {0, 20}, 32);
+  state.font.renderCentered(state.uiBatch, "%rYou have finished the game!", {0, -20}, 16);
+  state.font.renderCentered(state.uiBatch, "%wpress %y'q' %wto quit!", {0, -40}, 16);
+
   state.uiBatch.endFrame();
   gameWindow.endFrame();
 }
@@ -241,6 +266,8 @@ int main() {
 
     if (state.playState == GAME_PLAY)
       renderGame(state, halfWindowSize);
+    else if (state.playState == GAME_CONGRAT)
+      congratScreen(state, halfWindowSize);
     else if (state.playState == GAME_ENDSCREEN)
       renderEndScreen(state, halfWindowSize);
     else if (state.playState == GAME_CLOSE)

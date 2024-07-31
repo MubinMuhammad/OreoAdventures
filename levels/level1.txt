@@ -15,4 +15,4 @@
 |                      _     ___                        C                                 
 |                                            T      GGGGGGGG                              
 |GGGGGGGG                              GGGGGGGGGGGGGddddddddG                            D
-|ddddddddGGGGGGGGGss     sssGGGGGGGGGGGddddddddddddddddddddddGGGGGG      GGGGGGGGGGGGGGGGd
+|ddddddddGGGGGGGGGsswwwwwsssGGGGGGGGGGGddddddddddddddddddddddGGGGGGwwwwwwGGGGGGGGGGGGGGGGd

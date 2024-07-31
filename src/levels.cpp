@@ -155,6 +155,7 @@ std::vector<game::Level> game::levelRead(std::vector<std::string> levelPaths) {
       crntRowRle.push_back('\n');
       levels[crntLevelIdx].m_rle.insert(0, crntRowRle);
     }
+    std::cout << levels[crntLevelIdx].m_rle << std::endl;
 
     levels[crntLevelIdx].m_length = levelGetLength(levels[crntLevelIdx].m_rle);
     crntLevelIdx++;
