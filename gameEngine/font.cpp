@@ -1,6 +1,5 @@
 #include "font.hpp"
 #include "texture.hpp"
-#include <cstdio>
 
 static std::string charMap =
 "ABCDEFGHIJKLMNOP\n"
@@ -40,13 +39,13 @@ static int getColorStrSize(std::string s) {
   int len = 0;
 
   for (int i = 0; i < s.size(); i++) {
-    len++;
     if (i != s.size() - 1 && s[i] == '%') {
       char c = s[i + 1];
 
       if (c == 'a' || c == 'w' || c == 'r' || c == 'g' || c == 'b' ||
           c == 'y' || c == 'o' || c == 'c' || c == 'p') i += 2;
     }
+    len++;
   }
 
   return len;
@@ -110,11 +109,8 @@ void gameEngine::Font::render(cstmEngine::Batch &batch, std::string str,
 
 void gameEngine::Font::renderCentered(cstmEngine::Batch &batch, std::string str,
                                       cstmEngine::vec2 textPos, uint32_t fontSize) {
-  cstmEngine::vec3 color = fontColors[0];
-
-  int halfTextLength = (getColorStrSize(str) * fontSize) / 2;
-  textPos.x -= halfTextLength;
-  textPos.y -= (float)fontSize / 2;
+  textPos.x -= ((getColorStrSize(str) - 1) * fontSize) / 2.0f;
+  textPos.y -= fontSize / 2.0f;
 
   Font::render(batch, str, textPos, fontSize);
 }

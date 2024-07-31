@@ -103,8 +103,8 @@ void renderGame(gameState &state, cstmEngine::vec2 halfWindowSize) {
   glUniformMatrix4fv(glGetUniformLocation(state.mainShader.getShaderProgram(), "view"),
                      1, GL_FALSE, glm::value_ptr(state.view));
 
-  game::renderCloud(state.mainBatch, state.tileMap.maps, state.tileMap.sizes, state.tileSize,
-                    0, 4, state.seed, state.crntLevel.p->m_length);
+  game::renderCloud(state.mainBatch, state.tileMap.maps, state.tileMap.sizes, *state.crntLevel.p,
+                    state.tileSize, 0, 4, state.seed);
 
   state.crntLevel.p->renderLevel(state.mainBatch, state.player, state.playState,
                                  state.tileMap.maps, state.tileMap.sizes, state.tileSize,

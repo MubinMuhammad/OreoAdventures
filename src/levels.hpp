@@ -58,8 +58,8 @@ namespace game {
   // function in C to generate random numbers
   // with the given seed.
   void renderCloud(cstmEngine::Batch &batch, std::vector<cstmEngine::vec2> &textureGrid,
-                   std::vector<cstmEngine::vec2> &quadSizes, int tileSize, int cloudHeight,
-                   uint32_t variability, uint32_t seed, uint32_t levelLength);
+                   const std::vector<cstmEngine::vec2> &quadSizes, const game::Level &level,
+                   int tileSize, int cloudHeight, uint32_t variability, uint32_t seed);
 }
 
 #endif

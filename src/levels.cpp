@@ -155,7 +155,6 @@ std::vector<game::Level> game::levelRead(std::vector<std::string> levelPaths) {
       crntRowRle.push_back('\n');
       levels[crntLevelIdx].m_rle.insert(0, crntRowRle);
     }
-    std::cout << levels[crntLevelIdx].m_rle << std::endl;
 
     levels[crntLevelIdx].m_length = levelGetLength(levels[crntLevelIdx].m_rle);
     crntLevelIdx++;
@@ -424,25 +423,20 @@ void game::Level::renderTile(cstmEngine::Batch &batch, std::vector<cstmEngine::v
 // render cloud function is used for generating cloud at
 // a certain level height.
 void game::renderCloud(cstmEngine::Batch &batch, std::vector<cstmEngine::vec2> &textureGrid,
-                       std::vector<cstmEngine::vec2> &quadSizes, int tileSize,
-                       int cloudHeight, uint32_t variability, uint32_t seed,
-                       uint32_t levelLength) {
+                       const std::vector<cstmEngine::vec2> &quadSizes, const game::Level &level,
+                       int tileSize, int cloudHeight, uint32_t variability, uint32_t seed) {
   // Here, we set the seed that's used create randomness
   // in the positions and type of the clouds.
-  srand(seed);
+  // level.m_rle.size() method is used to generate
+  // different clouds for each level.
+  srand(seed + level.m_rle.size());
 
-  for (int i = 0; i <= levelLength; i += 5) {
-    // this is a simple equation to generate random heights
-    // for the clouds. The rand() will generate the random
-    // numbers between 0 and RAND_MAX. but for our porposes
-    // we will mod it by variability to get random numbers
-    // between 0 and varibility - 1. Then to add the height
-    // to it we add cloudHeight / 2 to it.
+  for (int i = -10; i <= (int)level.m_length; i += 5) {
     int y = ((rand() % variability) + cloudHeight);
 
     // the block type is got in the same way the trees get
     // the random generation.
-    game::BlockType bt = (game::BlockType)(TILE_CLOUD1 + rand() % 4);
+    game::BlockType bt = (game::BlockType)(game::TILE_CLOUD1 + rand() % 4);
 
     // this is same as we have done in renderTile.
     cstmEngine::vec2 texCoords[4];

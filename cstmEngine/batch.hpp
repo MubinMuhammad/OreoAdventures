@@ -40,11 +40,8 @@ namespace cstmEngine {
 
       void drawQuad(vec2 size, vec2 pos, vec3 color) {
         if (m_totalQuads == BATCH_SQUARE_CAPACITY) {
-          glBindBuffer(GL_ARRAY_BUFFER, m_buffer.m_vbo);
-          glBufferSubData(GL_ARRAY_BUFFER, 0, m_totalQuads * sizeof(Vertex) * 4, m_vertices);
-          glBindVertexArray(m_buffer.m_vao);
-          glDrawElements(GL_TRIANGLES, m_totalQuads * 6, GL_UNSIGNED_INT, 0);
-          m_totalQuads = 0;
+          endFrame();
+          beginFrame();
         }
 
         float x = size.x / 2;
@@ -60,11 +57,8 @@ namespace cstmEngine {
 
       void drawQuad(vec2 size, vec2 pos, vec2 *texture_coords) {
         if (m_totalQuads == BATCH_SQUARE_CAPACITY) {
-          glBindBuffer(GL_ARRAY_BUFFER, m_buffer.m_vbo);
-          glBufferSubData(GL_ARRAY_BUFFER, 0, m_totalQuads * sizeof(Vertex) * 4, m_vertices);
-          glBindVertexArray(m_buffer.m_vao);
-          glDrawElements(GL_TRIANGLES, m_totalQuads * 6, GL_UNSIGNED_INT, 0);
-          m_totalQuads = 0;
+          endFrame();
+          beginFrame();
         }
 
         float x = size.x / 2;
@@ -80,11 +74,8 @@ namespace cstmEngine {
 
       void drawQuad(vec2 size, vec2 pos, vec2 *texture_coords, vec3 color) {
         if (m_totalQuads == BATCH_SQUARE_CAPACITY) {
-          glBindBuffer(GL_ARRAY_BUFFER, m_buffer.m_vbo);
-          glBufferSubData(GL_ARRAY_BUFFER, 0, m_totalQuads * sizeof(Vertex) * 4, m_vertices);
-          glBindVertexArray(m_buffer.m_vao);
-          glDrawElements(GL_TRIANGLES, m_totalQuads * 6, GL_UNSIGNED_INT, 0);
-          m_totalQuads = 0;
+          endFrame();
+          beginFrame();
         }
 
         float x = size.x / 2;
