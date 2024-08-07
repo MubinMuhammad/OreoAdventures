@@ -66,14 +66,12 @@ void game::Player::updateInput(const cstmEngine::Window &window, const gameEngin
     cstmEngine::vec2 playerForce;
 
     if (glfwGetKey(window.m_window, GLFW_KEY_A) == GLFW_PRESS ||
-        glfwGetKey(window.m_window, GLFW_KEY_LEFT) == GLFW_PRESS ||
-        glfwGetKey(window.m_window, GLFW_KEY_H) == GLFW_PRESS) {
+        glfwGetKey(window.m_window, GLFW_KEY_LEFT) == GLFW_PRESS) {
       playerForce.x = -1000.0f;
       m_viewSide = game::SIDE_LEFT;
     }
     else if (glfwGetKey(window.m_window, GLFW_KEY_D) == GLFW_PRESS ||
-             glfwGetKey(window.m_window, GLFW_KEY_RIGHT) == GLFW_PRESS ||
-             glfwGetKey(window.m_window, GLFW_KEY_L) == GLFW_PRESS) {
+             glfwGetKey(window.m_window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
       playerForce.x = 1000.0f;
       m_viewSide = game::SIDE_RIGHT;
     }
@@ -81,12 +79,10 @@ void game::Player::updateInput(const cstmEngine::Window &window, const gameEngin
       playerForce.x =  0.0f;
 
     if (glfwGetKey(window.m_window, GLFW_KEY_W) == GLFW_PRESS ||
-        glfwGetKey(window.m_window, GLFW_KEY_UP) == GLFW_PRESS ||
-        glfwGetKey(window.m_window, GLFW_KEY_K) == GLFW_PRESS)
+        glfwGetKey(window.m_window, GLFW_KEY_UP) == GLFW_PRESS)
       playerForce.y = 500.0f;
     else if (glfwGetKey(window.m_window, GLFW_KEY_S) == GLFW_PRESS ||
-             glfwGetKey(window.m_window, GLFW_KEY_DOWN) == GLFW_PRESS ||
-             glfwGetKey(window.m_window, GLFW_KEY_J) == GLFW_PRESS)
+             glfwGetKey(window.m_window, GLFW_KEY_DOWN) == GLFW_PRESS)
       playerForce.y = -500.0f;
     else
       playerForce.y = 0.0f;
