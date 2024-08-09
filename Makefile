@@ -10,13 +10,13 @@ SRC_FILES := src/main.cpp \
 	gameEngine/texture.cpp \
 	gameEngine/font.cpp \
 	cstmEngine/glad/src/glad.c
-EXE := MarioAdventures
+EXE := OreoAdventures
 
 all:
 	$(COMPILER) $(SRC_FILES) -o $(EXE) $(INCLUDE_DIR) $(LIBS)
 
 run: all
-	./MarioAdventures
+	./$(EXE)
 
 clean:
-	rm -fr ./MarioAdventures
+	rm -fr ./$(EXE)
