@@ -1,4 +1,4 @@
-# MarioAdventures
+# OreoAdventures
 > [!CAUTION]
 > This game is only written for play testing purposes and not meant for acutal gameplay or something to get addicted to.
 
